@@ -4,6 +4,8 @@ import type { UserIdentity, User } from "@supabase/supabase-js";
 import {
   AlertTriangle,
   BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
   Download,
   History,
   KeyRound,
@@ -12,7 +14,9 @@ import {
   Mail,
   MailWarning,
   Monitor,
+  Search,
   ShieldCheck,
+  Sheet,
   Trash2,
   UserRound,
   XCircle,
@@ -34,9 +38,24 @@ import {
   type SessionRow,
 } from "@/lib/account-sessions";
 import { buildAccountExport, downloadFile } from "@/lib/account-export";
+import { activityToCsv, csvFilename, sessionsToCsv } from "@/lib/account-csv";
 import { MIN_SCORE, breachCount, scorePassword } from "@/lib/password-strength";
 import { PasswordStrength } from "@/components/dash/PasswordStrength";
 import { deleteMyAccount } from "@/lib/account.functions";
+
+const PAGE_SIZE = 8;
+
+const RANGES = [
+  { value: "all", label: "All time", days: 0 },
+  { value: "24h", label: "Last 24 hours", days: 1 },
+  { value: "7d", label: "Last 7 days", days: 7 },
+  { value: "30d", label: "Last 30 days", days: 30 },
+  { value: "90d", label: "Last 90 days", days: 90 },
+] as const;
+
+const filterInput =
+  "t-body h-10 w-full rounded-xl border border-border bg-transparent px-3.5 outline-none focus:border-accent";
+
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/account")({
