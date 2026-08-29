@@ -25,6 +25,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardAccountRouteImport } from './routes/_authenticated/dashboard.account'
 import { Route as AuthenticatedDashboardEvaluationRouteImport } from './routes/_authenticated/dashboard.evaluation'
 import { Route as AuthenticatedDashboardGateRouteImport } from './routes/_authenticated/dashboard.gate'
 import { Route as AuthenticatedDashboardRunsRouteImport } from './routes/_authenticated/dashboard.runs'
@@ -113,6 +114,12 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardAccountRoute =
+  AuthenticatedDashboardAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardEvaluationRoute =
   AuthenticatedDashboardEvaluationRouteImport.update({
     id: '/evaluation',
@@ -171,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/dashboard/account': typeof AuthenticatedDashboardAccountRoute
   '/dashboard/evaluation': typeof AuthenticatedDashboardEvaluationRoute
   '/dashboard/gate': typeof AuthenticatedDashboardGateRoute
   '/dashboard/runs': typeof AuthenticatedDashboardRunsRoute
@@ -194,6 +202,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
+  '/dashboard/account': typeof AuthenticatedDashboardAccountRoute
   '/dashboard/evaluation': typeof AuthenticatedDashboardEvaluationRoute
   '/dashboard/gate': typeof AuthenticatedDashboardGateRoute
   '/dashboard/runs': typeof AuthenticatedDashboardRunsRoute
@@ -220,6 +229,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/_authenticated/dashboard/account': typeof AuthenticatedDashboardAccountRoute
   '/_authenticated/dashboard/evaluation': typeof AuthenticatedDashboardEvaluationRoute
   '/_authenticated/dashboard/gate': typeof AuthenticatedDashboardGateRoute
   '/_authenticated/dashboard/runs': typeof AuthenticatedDashboardRunsRoute
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/blog/$slug'
     | '/blog/'
+    | '/dashboard/account'
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/blog'
+    | '/dashboard/account'
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
@@ -294,6 +306,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/blog/$slug'
     | '/blog/'
+    | '/_authenticated/dashboard/account'
     | '/_authenticated/dashboard/evaluation'
     | '/_authenticated/dashboard/gate'
     | '/_authenticated/dashboard/runs'
@@ -435,6 +448,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/account': {
+      id: '/_authenticated/dashboard/account'
+      path: '/account'
+      fullPath: '/dashboard/account'
+      preLoaderRoute: typeof AuthenticatedDashboardAccountRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/evaluation': {
       id: '/_authenticated/dashboard/evaluation'
       path: '/evaluation'
@@ -488,6 +508,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardAccountRoute: typeof AuthenticatedDashboardAccountRoute
   AuthenticatedDashboardEvaluationRoute: typeof AuthenticatedDashboardEvaluationRoute
   AuthenticatedDashboardGateRoute: typeof AuthenticatedDashboardGateRoute
   AuthenticatedDashboardRunsRoute: typeof AuthenticatedDashboardRunsRoute
@@ -500,6 +521,7 @@ interface AuthenticatedDashboardRouteChildren {
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardAccountRoute: AuthenticatedDashboardAccountRoute,
     AuthenticatedDashboardEvaluationRoute:
       AuthenticatedDashboardEvaluationRoute,
     AuthenticatedDashboardGateRoute: AuthenticatedDashboardGateRoute,
