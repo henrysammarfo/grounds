@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TrendingUp, Timer, DollarSign, ShieldCheck } from "lucide-react";
 import { metrics, accuracyByCase } from "@/lib/grounds-data";
 
-export const Route = createFileRoute("/dashboard/evaluation")({
+export const Route = createFileRoute("/_authenticated/dashboard/evaluation")({
   component: EvaluationPage,
 });
 

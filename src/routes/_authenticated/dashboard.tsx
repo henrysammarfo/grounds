@@ -15,7 +15,7 @@ import {
 import { GroundsWordmark } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "GROUNDS dashboard — claim packs, runs and approvals" },

@@ -4,7 +4,7 @@ import { Settings2, KeyRound, Users, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/settings")({
+export const Route = createFileRoute("/_authenticated/dashboard/settings")({
   component: SettingsPage,
 });
 

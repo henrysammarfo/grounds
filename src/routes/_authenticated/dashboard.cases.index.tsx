@@ -5,7 +5,7 @@ import { cases, type CaseStatus } from "@/lib/grounds-data";
 import { StatusPill } from "@/components/dash/StatusPill";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/cases/")({
+export const Route = createFileRoute("/_authenticated/dashboard/cases/")({
   component: CasesPage,
 });
 

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { runs } from "@/lib/grounds-data";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/runs")({
+export const Route = createFileRoute("/_authenticated/dashboard/runs")({
   component: RunsPage,
 });
 
