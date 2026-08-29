@@ -96,13 +96,84 @@ function AccountPage() {
   const [confirmDelete, setConfirmDelete] = useState("");
   const [breach, setBreach] = useState<number | null>(null);
   const [checkingBreach, setCheckingBreach] = useState(false);
+  const [actQuery, setActQuery] = useState("");
+  const [actEvent, setActEvent] = useState("all");
+  const [actRange, setActRange] = useState<string>("all");
+  const [actPage, setActPage] = useState(1);
+  const [sesQuery, setSesQuery] = useState("");
+  const [sesScope, setSesScope] = useState("all");
+  const [sesPage, setSesPage] = useState(1);
   const navigate = useNavigate();
 
   const strength = useMemo(() => scorePassword(newPassword), [newPassword]);
 
-  async function loadActivity() {
-    setActivity(await fetchActivity(25));
+  // ---- Activity filtering + pagination -------------------------------------
+  const eventOptions = useMemo(
+    () => Array.from(new Set(activity.map((a) => a.event))).sort(),
+    [activity],
+  );
+
+  const filteredActivity = useMemo(() => {
+    const q = actQuery.trim().toLowerCase();
+    const days = RANGES.find((r) => r.value === actRange)?.days ?? 0;
+    const cutoff = days ? Date.now() - days * 86_400_000 : 0;
+    return activity.filter((a) => {
+      if (actEvent !== "all" && a.event !== actEvent) return false;
+      if (cutoff && new Date(a.created_at).getTime() < cutoff) return false;
+      if (!q) return true;
+      return [EVENT_LABELS[a.event] ?? a.event, a.event, a.detail, a.device]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [activity, actQuery, actEvent, actRange]);
+
+  const actPages = Math.max(1, Math.ceil(filteredActivity.length / PAGE_SIZE));
+  const actPageSafe = Math.min(actPage, actPages);
+  const activityPage = filteredActivity.slice(
+    (actPageSafe - 1) * PAGE_SIZE,
+    actPageSafe * PAGE_SIZE,
+  );
+
+  // ---- Session filtering + pagination --------------------------------------
+  const filteredSessions = useMemo(() => {
+    const q = sesQuery.trim().toLowerCase();
+    return sessions.filter((s) => {
+      if (sesScope === "current" && !s.is_current) return false;
+      if (sesScope === "other" && s.is_current) return false;
+      if (!q) return true;
+      return [labelFromUserAgent(s.user_agent), s.user_agent, s.ip]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [sessions, sesQuery, sesScope]);
+
+  const sesPages = Math.max(1, Math.ceil(filteredSessions.length / PAGE_SIZE));
+  const sesPageSafe = Math.min(sesPage, sesPages);
+  const sessionsPage = filteredSessions.slice(
+    (sesPageSafe - 1) * PAGE_SIZE,
+    sesPageSafe * PAGE_SIZE,
+  );
+
+  function exportActivityCsv() {
+    downloadFile(csvFilename("activity"), activityToCsv(filteredActivity), "text/csv;charset=utf-8");
+    toast.success(`Exported ${filteredActivity.length} activity rows as CSV.`);
+    logActivity("data_exported", `activity CSV (${filteredActivity.length} rows)`).then(
+      loadActivity,
+    );
   }
+
+  function exportSessionsCsv() {
+    downloadFile(csvFilename("sessions"), sessionsToCsv(filteredSessions), "text/csv;charset=utf-8");
+    toast.success(`Exported ${filteredSessions.length} sessions as CSV.`);
+    logActivity("data_exported", `sessions CSV (${filteredSessions.length} rows)`).then(
+      loadActivity,
+    );
+  }
+
+  async function loadActivity() {
+    setActivity(await fetchActivity(500));
+  }
+
 
   async function loadSessions() {
     setSessions(await fetchSessions());
