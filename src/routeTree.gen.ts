@@ -19,11 +19,13 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProductRouteImport } from './routes/product'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardAccountRouteImport } from './routes/_authenticated/dashboard.account'
 import { Route as AuthenticatedDashboardEvaluationRouteImport } from './routes/_authenticated/dashboard.evaluation'
 import { Route as AuthenticatedDashboardGateRouteImport } from './routes/_authenticated/dashboard.gate'
 import { Route as AuthenticatedDashboardRunsRouteImport } from './routes/_authenticated/dashboard.runs'
@@ -81,6 +83,11 @@ const ProductRoute = ProductRouteImport.update({
   path: '/product',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
@@ -105,6 +112,12 @@ const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardAccountRoute =
+  AuthenticatedDashboardAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardEvaluationRoute =
@@ -160,10 +173,12 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
   '/product': typeof ProductRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/dashboard/account': typeof AuthenticatedDashboardAccountRoute
   '/dashboard/evaluation': typeof AuthenticatedDashboardEvaluationRoute
   '/dashboard/gate': typeof AuthenticatedDashboardGateRoute
   '/dashboard/runs': typeof AuthenticatedDashboardRunsRoute
@@ -183,9 +198,11 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
   '/product': typeof ProductRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
+  '/dashboard/account': typeof AuthenticatedDashboardAccountRoute
   '/dashboard/evaluation': typeof AuthenticatedDashboardEvaluationRoute
   '/dashboard/gate': typeof AuthenticatedDashboardGateRoute
   '/dashboard/runs': typeof AuthenticatedDashboardRunsRoute
@@ -207,10 +224,12 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
   '/product': typeof ProductRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/_authenticated/dashboard/account': typeof AuthenticatedDashboardAccountRoute
   '/_authenticated/dashboard/evaluation': typeof AuthenticatedDashboardEvaluationRoute
   '/_authenticated/dashboard/gate': typeof AuthenticatedDashboardGateRoute
   '/_authenticated/dashboard/runs': typeof AuthenticatedDashboardRunsRoute
@@ -232,10 +251,12 @@ export interface FileRouteTypes {
     | '/faq'
     | '/pricing'
     | '/product'
+    | '/reset-password'
     | '/signin'
     | '/dashboard'
     | '/blog/$slug'
     | '/blog/'
+    | '/dashboard/account'
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
@@ -255,9 +276,11 @@ export interface FileRouteTypes {
     | '/faq'
     | '/pricing'
     | '/product'
+    | '/reset-password'
     | '/signin'
     | '/blog/$slug'
     | '/blog'
+    | '/dashboard/account'
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
@@ -278,10 +301,12 @@ export interface FileRouteTypes {
     | '/faq'
     | '/pricing'
     | '/product'
+    | '/reset-password'
     | '/signin'
     | '/_authenticated/dashboard'
     | '/blog/$slug'
     | '/blog/'
+    | '/_authenticated/dashboard/account'
     | '/_authenticated/dashboard/evaluation'
     | '/_authenticated/dashboard/gate'
     | '/_authenticated/dashboard/runs'
@@ -303,6 +328,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   PricingRoute: typeof PricingRoute
   ProductRoute: typeof ProductRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SigninRoute: typeof SigninRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -380,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signin': {
       id: '/signin'
       path: '/signin'
@@ -413,6 +446,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/account': {
+      id: '/_authenticated/dashboard/account'
+      path: '/account'
+      fullPath: '/dashboard/account'
+      preLoaderRoute: typeof AuthenticatedDashboardAccountRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/evaluation': {
@@ -468,6 +508,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardAccountRoute: typeof AuthenticatedDashboardAccountRoute
   AuthenticatedDashboardEvaluationRoute: typeof AuthenticatedDashboardEvaluationRoute
   AuthenticatedDashboardGateRoute: typeof AuthenticatedDashboardGateRoute
   AuthenticatedDashboardRunsRoute: typeof AuthenticatedDashboardRunsRoute
@@ -480,6 +521,7 @@ interface AuthenticatedDashboardRouteChildren {
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardAccountRoute: AuthenticatedDashboardAccountRoute,
     AuthenticatedDashboardEvaluationRoute:
       AuthenticatedDashboardEvaluationRoute,
     AuthenticatedDashboardGateRoute: AuthenticatedDashboardGateRoute,
@@ -521,6 +563,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   PricingRoute: PricingRoute,
   ProductRoute: ProductRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SigninRoute: SigninRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,

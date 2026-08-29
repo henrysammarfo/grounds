@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { clearRememberMe } from "@/lib/auth-session";
 
 import {
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
   X,
   Bell,
   LogOut,
+  UserRound,
 
 } from "lucide-react";
 import { GroundsWordmark } from "@/components/brand/Logo";
@@ -48,7 +50,9 @@ const nav = [
   { to: "/dashboard/trajectories", label: "Trajectories", icon: RouteIcon },
   { to: "/dashboard/evaluation", label: "Evaluation", icon: BarChart3 },
   { to: "/dashboard/gate", label: "Human gate", icon: ShieldCheck },
+  { to: "/dashboard/account", label: "Account", icon: UserRound },
   { to: "/dashboard/settings", label: "Settings", icon: Settings },
+
 ] as const;
 
 function DashboardLayout() {
@@ -66,6 +70,7 @@ function DashboardLayout() {
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
+    clearRememberMe();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
@@ -133,9 +138,14 @@ function DashboardLayout() {
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
             <span className="t-meta hidden sm:block">{email}</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-on-dark">
+            <Link
+              to="/dashboard/account"
+              aria-label="Account settings"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-on-dark"
+            >
               {initials}
-            </span>
+            </Link>
+
             <button
               type="button"
               onClick={handleSignOut}
