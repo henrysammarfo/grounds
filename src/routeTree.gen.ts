@@ -23,6 +23,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardCasesIndexRouteImport } from './routes/dashboard.cases.index'
+import { Route as DashboardCasesCaseIdRouteImport } from './routes/dashboard.cases.$caseId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -94,6 +95,11 @@ const DashboardCasesIndexRoute = DashboardCasesIndexRouteImport.update({
   path: '/cases/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardCasesCaseIdRoute = DashboardCasesCaseIdRouteImport.update({
+  id: '/cases/$caseId',
+  path: '/cases/$caseId',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
   '/dashboard/cases/': typeof DashboardCasesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
   '/dashboard/cases': typeof DashboardCasesIndexRoute
 }
 export interface FileRoutesById {
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
   '/dashboard/cases/': typeof DashboardCasesIndexRoute
 }
 export interface FileRouteTypes {
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/'
     | '/dashboard/'
+    | '/dashboard/cases/$caseId'
     | '/dashboard/cases/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog'
     | '/dashboard'
+    | '/dashboard/cases/$caseId'
     | '/dashboard/cases'
   id:
     | '__root__'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/'
     | '/dashboard/'
+    | '/dashboard/cases/$caseId'
     | '/dashboard/cases/'
   fileRoutesById: FileRoutesById
 }
@@ -308,16 +320,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCasesIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/cases/$caseId': {
+      id: '/dashboard/cases/$caseId'
+      path: '/cases/$caseId'
+      fullPath: '/dashboard/cases/$caseId'
+      preLoaderRoute: typeof DashboardCasesCaseIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardCasesCaseIdRoute: typeof DashboardCasesCaseIdRoute
   DashboardCasesIndexRoute: typeof DashboardCasesIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardCasesCaseIdRoute: DashboardCasesCaseIdRoute,
   DashboardCasesIndexRoute: DashboardCasesIndexRoute,
 }
 
