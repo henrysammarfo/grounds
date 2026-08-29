@@ -609,9 +609,10 @@ function AccountPage() {
           <div>
             <h2 className="t-heading">Active sessions</h2>
             <p className="t-meta mt-2">
-              Signing out everywhere revokes every refresh token, including other browsers and
-              devices.
+              Revoke a single device below, or sign out everywhere to invalidate every refresh
+              token at once.
             </p>
+
           </div>
           <button
             type="button"
