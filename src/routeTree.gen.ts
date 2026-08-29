@@ -22,6 +22,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardRunsRouteImport } from './routes/dashboard.runs'
 import { Route as DashboardCasesIndexRouteImport } from './routes/dashboard.cases.index'
 import { Route as DashboardCasesCaseIdRouteImport } from './routes/dashboard.cases.$caseId'
 
@@ -90,6 +91,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardRunsRoute = DashboardRunsRouteImport.update({
+  id: '/runs',
+  path: '/runs',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardCasesIndexRoute = DashboardCasesIndexRouteImport.update({
   id: '/cases/',
   path: '/cases/',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/product': typeof ProductRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/dashboard/runs': typeof DashboardRunsRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/product': typeof ProductRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/dashboard/runs': typeof DashboardRunsRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/product': typeof ProductRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/dashboard/runs': typeof DashboardRunsRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/product'
     | '/signin'
     | '/blog/$slug'
+    | '/dashboard/runs'
     | '/blog/'
     | '/dashboard/'
     | '/dashboard/cases/$caseId'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/product'
     | '/signin'
     | '/blog/$slug'
+    | '/dashboard/runs'
     | '/blog'
     | '/dashboard'
     | '/dashboard/cases/$caseId'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/product'
     | '/signin'
     | '/blog/$slug'
+    | '/dashboard/runs'
     | '/blog/'
     | '/dashboard/'
     | '/dashboard/cases/$caseId'
@@ -313,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/runs': {
+      id: '/dashboard/runs'
+      path: '/runs'
+      fullPath: '/dashboard/runs'
+      preLoaderRoute: typeof DashboardRunsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/cases/': {
       id: '/dashboard/cases/'
       path: '/cases'
@@ -331,12 +350,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardRunsRoute: typeof DashboardRunsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardCasesCaseIdRoute: typeof DashboardCasesCaseIdRoute
   DashboardCasesIndexRoute: typeof DashboardCasesIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardRunsRoute: DashboardRunsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardCasesCaseIdRoute: DashboardCasesCaseIdRoute,
   DashboardCasesIndexRoute: DashboardCasesIndexRoute,
