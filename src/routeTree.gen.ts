@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PricingRouteImport } from './routes/pricing'
@@ -39,6 +40,11 @@ const ChangelogRoute = ChangelogRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/brand': typeof BrandRoute
   '/changelog': typeof ChangelogRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/brand': typeof BrandRoute
   '/changelog': typeof ChangelogRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/brand': typeof BrandRoute
   '/changelog': typeof ChangelogRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/changelog'
     | '/contact'
+    | '/dashboard'
     | '/docs'
     | '/faq'
     | '/pricing'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/changelog'
     | '/contact'
+    | '/dashboard'
     | '/docs'
     | '/faq'
     | '/pricing'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/changelog'
     | '/contact'
+    | '/dashboard'
     | '/docs'
     | '/faq'
     | '/pricing'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   BrandRoute: typeof BrandRoute
   ChangelogRoute: typeof ChangelogRoute
   ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRoute
   DocsRoute: typeof DocsRoute
   FaqRoute: typeof FaqRoute
   PricingRoute: typeof PricingRoute
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandRoute: BrandRoute,
   ChangelogRoute: ChangelogRoute,
   ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRoute,
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   PricingRoute: PricingRoute,
