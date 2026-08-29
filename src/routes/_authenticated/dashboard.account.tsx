@@ -629,8 +629,8 @@ function AccountPage() {
         </div>
 
         <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
-          <li className="flex items-center justify-between gap-4 px-5 py-4">
-            <div className="flex items-center gap-3">
+          {sessions.length === 0 && (
+            <li className="flex items-center gap-3 px-5 py-4">
               <Monitor className="h-4.5 w-4.5 text-accent" strokeWidth={2} />
               <div>
                 <p className="t-item">{describeDevice()}</p>
@@ -638,27 +638,67 @@ function AccountPage() {
                   This device{sessionSince ? ` · token renews ${sessionSince}` : ""}
                 </p>
               </div>
-            </div>
-            <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Current</span>
-          </li>
-          {recentDevices
-            .filter((d) => d.device !== describeDevice())
-            .map((d) => (
-              <li key={d.id} className="flex items-center justify-between gap-4 px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <Monitor className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
-                  <div>
-                    <p className="t-item">{d.device ?? "Unknown device"}</p>
-                    <p className="t-caption mt-0.5">
-                      Last sign-in {new Date(d.created_at).toLocaleString()}
-                    </p>
-                  </div>
+            </li>
+          )}
+          {sessions.map((s) => (
+            <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+              <div className="flex items-center gap-3">
+                <Monitor
+                  className={`h-4.5 w-4.5 ${s.is_current ? "text-accent" : "text-muted-foreground"}`}
+                  strokeWidth={2}
+                />
+                <div>
+                  <p className="t-item">{labelFromUserAgent(s.user_agent)}</p>
+                  <p className="t-caption mt-0.5">
+                    {[
+                      s.is_current ? "This device" : null,
+                      s.ip ? `IP ${s.ip}` : null,
+                      s.refreshed_at
+                        ? `Last active ${new Date(s.refreshed_at).toLocaleString()}`
+                        : `Started ${new Date(s.created_at).toLocaleString()}`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
                 </div>
-                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Signed in</span>
-              </li>
-            ))}
+              </div>
+              {s.is_current ? (
+                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Current</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => revokeOne(s)}
+                  disabled={busy === `session:${s.id}`}
+                  className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-50"
+                >
+                  <XCircle className="h-3.5 w-3.5" strokeWidth={2} />
+                  Revoke
+                </button>
+              )}
+            </li>
+          ))}
         </ul>
       </section>
+
+      <section className="panel flex flex-wrap items-start justify-between gap-4 p-7">
+        <div className="max-w-[52ch]">
+          <h2 className="t-heading">Export your data</h2>
+          <p className="t-meta mt-2">
+            Downloads a JSON file with your profile, sign-in methods, active sessions and full
+            activity log. Credentials and tokens are never included.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={exportData}
+          disabled={busy === "export"}
+          className="btn-ink hover:opacity-90 disabled:opacity-60"
+        >
+          <Download className="h-4 w-4" strokeWidth={2} />
+          Download my data
+        </button>
+      </section>
+
 
       <section className="panel p-7">
         <div className="flex items-center gap-2">
