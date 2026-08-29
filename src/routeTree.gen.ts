@@ -22,6 +22,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardEvaluationRouteImport } from './routes/dashboard.evaluation'
 import { Route as DashboardRunsRouteImport } from './routes/dashboard.runs'
 import { Route as DashboardTrajectoriesRouteImport } from './routes/dashboard.trajectories'
 import { Route as DashboardCasesIndexRouteImport } from './routes/dashboard.cases.index'
@@ -92,6 +93,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardEvaluationRoute = DashboardEvaluationRouteImport.update({
+  id: '/evaluation',
+  path: '/evaluation',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardRunsRoute = DashboardRunsRouteImport.update({
   id: '/runs',
   path: '/runs',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/product': typeof ProductRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/dashboard/evaluation': typeof DashboardEvaluationRoute
   '/dashboard/runs': typeof DashboardRunsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/product': typeof ProductRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/dashboard/evaluation': typeof DashboardEvaluationRoute
   '/dashboard/runs': typeof DashboardRunsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog': typeof BlogIndexRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/product': typeof ProductRoute
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/dashboard/evaluation': typeof DashboardEvaluationRoute
   '/dashboard/runs': typeof DashboardRunsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/product'
     | '/signin'
     | '/blog/$slug'
+    | '/dashboard/evaluation'
     | '/dashboard/runs'
     | '/dashboard/trajectories'
     | '/blog/'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/product'
     | '/signin'
     | '/blog/$slug'
+    | '/dashboard/evaluation'
     | '/dashboard/runs'
     | '/dashboard/trajectories'
     | '/blog'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/product'
     | '/signin'
     | '/blog/$slug'
+    | '/dashboard/evaluation'
     | '/dashboard/runs'
     | '/dashboard/trajectories'
     | '/blog/'
@@ -337,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/evaluation': {
+      id: '/dashboard/evaluation'
+      path: '/evaluation'
+      fullPath: '/dashboard/evaluation'
+      preLoaderRoute: typeof DashboardEvaluationRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/runs': {
       id: '/dashboard/runs'
       path: '/runs'
@@ -369,6 +388,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardEvaluationRoute: typeof DashboardEvaluationRoute
   DashboardRunsRoute: typeof DashboardRunsRoute
   DashboardTrajectoriesRoute: typeof DashboardTrajectoriesRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -377,6 +397,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardEvaluationRoute: DashboardEvaluationRoute,
   DashboardRunsRoute: DashboardRunsRoute,
   DashboardTrajectoriesRoute: DashboardTrajectoriesRoute,
   DashboardIndexRoute: DashboardIndexRoute,
