@@ -176,7 +176,19 @@ function AccountPage() {
 
   async function changePassword(e: React.FormEvent) {
     e.preventDefault();
+    if (strength.score < MIN_SCORE) {
+      toast.error("That password is too weak — make it longer and mix character types.");
+      return;
+    }
     setBusy("password");
+    // Final breach check in case the debounced one has not resolved yet.
+    const known = breach ?? (await breachCount(newPassword));
+    setBreach(known);
+    if (known && known > 0) {
+      setBusy(null);
+      toast.error("This password appears in known data breaches. Choose a different one.");
+      return;
+    }
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
       ...(currentPassword ? { current_password: currentPassword } : {}),
@@ -188,10 +200,46 @@ function AccountPage() {
     }
     setCurrentPassword("");
     setNewPassword("");
+    setBreach(null);
     toast.success(hasPassword ? "Password updated." : "Password set — you can now sign in with email.");
     await logActivity("password_changed");
     refresh();
   }
+
+  async function exportData() {
+    setBusy("export");
+    try {
+      const { filename, json } = await buildAccountExport();
+      downloadFile(filename, json);
+      toast.success("Your account data has been downloaded.");
+      await logActivity("data_exported", filename);
+      loadActivity();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not build the export.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function revokeOne(session: SessionRow) {
+    setBusy(`session:${session.id}`);
+    try {
+      const ok = await revokeSession(session.id);
+      if (!ok) {
+        toast.error("That session is no longer active.");
+      } else {
+        toast.success("Session revoked — that device has been signed out.");
+        await logActivity("session_revoked", labelFromUserAgent(session.user_agent));
+        loadActivity();
+      }
+      await loadSessions();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not revoke that session.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
 
   async function sendResetLink() {
     if (!user?.email) return;
