@@ -6,7 +6,7 @@ import { cases, trajectory } from "@/lib/grounds-data";
 import { TrajectoryList } from "@/components/dash/TrajectoryList";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/trajectories")({
+export const Route = createFileRoute("/_authenticated/dashboard/trajectories")({
   component: TrajectoriesPage,
 });
 

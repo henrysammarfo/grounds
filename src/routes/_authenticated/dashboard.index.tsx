@@ -12,7 +12,7 @@ import {
 import { cases, metrics, gateQueue, runs } from "@/lib/grounds-data";
 import { StatusPill } from "@/components/dash/StatusPill";
 
-export const Route = createFileRoute("/dashboard/")({
+export const Route = createFileRoute("/_authenticated/dashboard/")({
   component: Overview,
 });
 

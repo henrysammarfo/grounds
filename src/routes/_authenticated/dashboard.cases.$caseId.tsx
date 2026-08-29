@@ -5,7 +5,7 @@ import { cases, trajectory } from "@/lib/grounds-data";
 import { StatusPill, LabelPill } from "@/components/dash/StatusPill";
 import { TrajectoryList } from "@/components/dash/TrajectoryList";
 
-export const Route = createFileRoute("/dashboard/cases/$caseId")({
+export const Route = createFileRoute("/_authenticated/dashboard/cases/$caseId")({
   loader: ({ params }) => {
     const record = cases.find((c) => c.slug === params.caseId);
     if (!record) throw notFound();

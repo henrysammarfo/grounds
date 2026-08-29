@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { gateQueue } from "@/lib/grounds-data";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/gate")({
+export const Route = createFileRoute("/_authenticated/dashboard/gate")({
   component: GatePage,
 });
 

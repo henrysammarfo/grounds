@@ -1,5 +1,8 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
 import {
   LayoutDashboard,
   FolderGit2,
@@ -11,11 +14,13 @@ import {
   Menu,
   X,
   Bell,
+  LogOut,
+
 } from "lucide-react";
 import { GroundsWordmark } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "GROUNDS dashboard — claim packs, runs and approvals" },
@@ -48,6 +53,23 @@ const nav = [
 
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
+  }, []);
+
+  const initials = (email.split("@")[0] || "gr").slice(0, 2).toUpperCase();
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
 
   return (
     <div className="min-h-screen bg-secondary lg:flex">
@@ -110,11 +132,21 @@ function DashboardLayout() {
           <p className="t-item">Workspace · acme engineering</p>
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
+            <span className="t-meta hidden sm:block">{email}</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-on-dark">
-              AM
+              {initials}
             </span>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary"
+            >
+              <LogOut className="h-3.5 w-3.5" strokeWidth={2} />
+              Sign out
+            </button>
           </div>
         </header>
+
         <main className="p-6">
           <Outlet />
         </main>

@@ -28,7 +28,7 @@ export function VerdictCard({ className }: { className?: string }) {
         style={{
           width: 548,
           height: 340,
-          transform: "scale(calc(min(var(--u), 92vw) / 548))",
+          transform: "scale(calc(min(var(--u), 92vw) / 548px))",
         }}
       >
         <p className="t-eyebrow absolute left-[19px] top-[21px] whitespace-nowrap">
