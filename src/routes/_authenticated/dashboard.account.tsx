@@ -844,31 +844,110 @@ function AccountPage() {
 
 
       <section className="panel p-7">
-        <div className="flex items-center gap-2">
-          <History className="h-4 w-4 text-accent" strokeWidth={2} />
-          <h2 className="t-heading">Account activity</h2>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <History className="h-4 w-4 text-accent" strokeWidth={2} />
+              <h2 className="t-heading">Account activity</h2>
+            </div>
+            <p className="t-meta mt-2">
+              Recent sign-ins, credential changes and password resets on this account.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={exportActivityCsv}
+            disabled={filteredActivity.length === 0}
+            className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+          >
+            <Sheet className="h-3.5 w-3.5" strokeWidth={2} />
+            Export CSV
+          </button>
         </div>
-        <p className="t-meta mt-2">
-          Recent sign-ins, credential changes and password resets on this account.
-        </p>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              strokeWidth={2}
+            />
+            <input
+              aria-label="Search activity"
+              value={actQuery}
+              onChange={(e) => {
+                setActQuery(e.target.value);
+                setActPage(1);
+              }}
+              placeholder="Search events, details or devices…"
+              className={`${filterInput} pl-10`}
+            />
+          </div>
+          <select
+            aria-label="Filter by event type"
+            value={actEvent}
+            onChange={(e) => {
+              setActEvent(e.target.value);
+              setActPage(1);
+            }}
+            className={`${filterInput} sm:w-56`}
+          >
+            <option value="all">All event types</option>
+            {eventOptions.map((ev) => (
+              <option key={ev} value={ev}>
+                {EVENT_LABELS[ev] ?? ev}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by date range"
+            value={actRange}
+            onChange={(e) => {
+              setActRange(e.target.value);
+              setActPage(1);
+            }}
+            className={`${filterInput} sm:w-44`}
+          >
+            {RANGES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {activity.length === 0 ? (
           <p className="t-caption mt-6">No activity recorded yet.</p>
+        ) : filteredActivity.length === 0 ? (
+          <p className="t-caption mt-6">No events match these filters.</p>
         ) : (
-          <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
-            {activity.map((a) => (
-              <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3.5">
-                <div>
-                  <p className="t-item">{EVENT_LABELS[a.event] ?? a.event}</p>
-                  <p className="t-caption mt-0.5">
-                    {[a.detail, a.device].filter(Boolean).join(" · ") || "—"}
-                  </p>
-                </div>
-                <span className="t-caption">{new Date(a.created_at).toLocaleString()}</span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 divide-y divide-border-row rounded-xl border border-border-row">
+              {activityPage.map((a) => (
+                <li
+                  key={a.id}
+                  className="flex flex-wrap items-center justify-between gap-2 px-5 py-3.5"
+                >
+                  <div>
+                    <p className="t-item">{EVENT_LABELS[a.event] ?? a.event}</p>
+                    <p className="t-caption mt-0.5">
+                      {[a.detail, a.device].filter(Boolean).join(" · ") || "—"}
+                    </p>
+                  </div>
+                  <span className="t-caption">{new Date(a.created_at).toLocaleString()}</span>
+                </li>
+              ))}
+            </ul>
+            <Pager
+              label="events"
+              page={actPageSafe}
+              pages={actPages}
+              total={filteredActivity.length}
+              onChange={setActPage}
+            />
+          </>
         )}
       </section>
+
 
       <section className="panel border-destructive/40 p-7">
         <div className="flex items-center gap-2">
