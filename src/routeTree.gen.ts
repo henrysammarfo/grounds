@@ -23,6 +23,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardRunsRouteImport } from './routes/dashboard.runs'
+import { Route as DashboardTrajectoriesRouteImport } from './routes/dashboard.trajectories'
 import { Route as DashboardCasesIndexRouteImport } from './routes/dashboard.cases.index'
 import { Route as DashboardCasesCaseIdRouteImport } from './routes/dashboard.cases.$caseId'
 
@@ -96,6 +97,11 @@ const DashboardRunsRoute = DashboardRunsRouteImport.update({
   path: '/runs',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardTrajectoriesRoute = DashboardTrajectoriesRouteImport.update({
+  id: '/trajectories',
+  path: '/trajectories',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardCasesIndexRoute = DashboardCasesIndexRouteImport.update({
   id: '/cases/',
   path: '/cases/',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/runs': typeof DashboardRunsRoute
+  '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/runs': typeof DashboardRunsRoute
+  '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/runs': typeof DashboardRunsRoute
+  '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/cases/$caseId': typeof DashboardCasesCaseIdRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/dashboard/runs'
+    | '/dashboard/trajectories'
     | '/blog/'
     | '/dashboard/'
     | '/dashboard/cases/$caseId'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/dashboard/runs'
+    | '/dashboard/trajectories'
     | '/blog'
     | '/dashboard'
     | '/dashboard/cases/$caseId'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/dashboard/runs'
+    | '/dashboard/trajectories'
     | '/blog/'
     | '/dashboard/'
     | '/dashboard/cases/$caseId'
@@ -332,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRunsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/trajectories': {
+      id: '/dashboard/trajectories'
+      path: '/trajectories'
+      fullPath: '/dashboard/trajectories'
+      preLoaderRoute: typeof DashboardTrajectoriesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/cases/': {
       id: '/dashboard/cases/'
       path: '/cases'
@@ -351,6 +370,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardRunsRoute: typeof DashboardRunsRoute
+  DashboardTrajectoriesRoute: typeof DashboardTrajectoriesRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardCasesCaseIdRoute: typeof DashboardCasesCaseIdRoute
   DashboardCasesIndexRoute: typeof DashboardCasesIndexRoute
@@ -358,6 +378,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardRunsRoute: DashboardRunsRoute,
+  DashboardTrajectoriesRoute: DashboardTrajectoriesRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardCasesCaseIdRoute: DashboardCasesCaseIdRoute,
   DashboardCasesIndexRoute: DashboardCasesIndexRoute,

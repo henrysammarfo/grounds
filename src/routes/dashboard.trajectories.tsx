@@ -11,7 +11,7 @@ export const Route = createFileRoute("/dashboard/trajectories")({
 });
 
 function TrajectoriesPage() {
-  const [active, setActive] = useState(cases[0].id);
+  const [active, setActive] = useState(cases[0]?.id ?? "");
   const jsonl = trajectory
     .map((s) => JSON.stringify({ step: s.id, node: s.node, action: s.label, result: s.detail }))
     .join("\n");
