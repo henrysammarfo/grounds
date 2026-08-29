@@ -4,6 +4,8 @@ export type ActivityEvent =
   | "sign_in"
   | "sign_up"
   | "sign_out_all"
+  | "session_revoked"
+  | "data_exported"
   | "password_changed"
   | "password_reset_requested"
   | "email_change_requested"
@@ -24,6 +26,8 @@ export const EVENT_LABELS: Record<string, string> = {
   sign_in: "Signed in",
   sign_up: "Account created",
   sign_out_all: "Signed out of all devices",
+  session_revoked: "Session revoked",
+  data_exported: "Account data exported",
   password_changed: "Password changed",
   password_reset_requested: "Password reset requested",
   email_change_requested: "Email change requested",
@@ -32,6 +36,7 @@ export const EVENT_LABELS: Record<string, string> = {
   google_linked: "Google connected",
   google_unlinked: "Google disconnected",
 };
+
 
 /** Short, human-readable device description from the user agent. */
 export function describeDevice(): string {

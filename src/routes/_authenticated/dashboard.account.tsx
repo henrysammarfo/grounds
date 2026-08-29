@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { UserIdentity, User } from "@supabase/supabase-js";
 import {
   AlertTriangle,
   BadgeCheck,
+  Download,
   History,
   KeyRound,
   Link2,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   Trash2,
   UserRound,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +27,17 @@ import {
   logActivity,
   type ActivityRow,
 } from "@/lib/account-activity";
+import {
+  fetchSessions,
+  labelFromUserAgent,
+  revokeSession,
+  type SessionRow,
+} from "@/lib/account-sessions";
+import { buildAccountExport, downloadFile } from "@/lib/account-export";
+import { MIN_SCORE, breachCount, scorePassword } from "@/lib/password-strength";
+import { PasswordStrength } from "@/components/dash/PasswordStrength";
 import { deleteMyAccount } from "@/lib/account.functions";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard/account")({
   head: () => ({
@@ -60,12 +72,21 @@ function AccountPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [sessionSince, setSessionSince] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState("");
+  const [breach, setBreach] = useState<number | null>(null);
+  const [checkingBreach, setCheckingBreach] = useState(false);
   const navigate = useNavigate();
+
+  const strength = useMemo(() => scorePassword(newPassword), [newPassword]);
 
   async function loadActivity() {
     setActivity(await fetchActivity(25));
+  }
+
+  async function loadSessions() {
+    setSessions(await fetchSessions());
   }
 
   async function refresh() {
@@ -82,7 +103,7 @@ function AccountPage() {
         .maybeSingle();
       setDisplayName(profile?.display_name ?? "");
       setAvatarUrl(profile?.avatar_url ?? "");
-      await loadActivity();
+      await Promise.all([loadActivity(), loadSessions()]);
     }
     setLoading(false);
   }
@@ -95,6 +116,28 @@ function AccountPage() {
       if (expires) setSessionSince(new Date(expires * 1000).toLocaleString());
     });
   }, []);
+
+  // Debounced breach lookup (k-anonymity: only a hash prefix leaves the browser).
+  useEffect(() => {
+    if (newPassword.length < 6) {
+      setBreach(null);
+      setCheckingBreach(false);
+      return;
+    }
+    setCheckingBreach(true);
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const count = await breachCount(newPassword);
+      if (cancelled) return;
+      setBreach(count);
+      setCheckingBreach(false);
+    }, 450);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [newPassword]);
+
 
   const hasPassword = identities.some((i) => i.provider === "email");
   const googleIdentity = identities.find((i) => i.provider === "google");
@@ -133,7 +176,19 @@ function AccountPage() {
 
   async function changePassword(e: React.FormEvent) {
     e.preventDefault();
+    if (strength.score < MIN_SCORE) {
+      toast.error("That password is too weak — make it longer and mix character types.");
+      return;
+    }
     setBusy("password");
+    // Final breach check in case the debounced one has not resolved yet.
+    const known = breach ?? (await breachCount(newPassword));
+    setBreach(known);
+    if (known && known > 0) {
+      setBusy(null);
+      toast.error("This password appears in known data breaches. Choose a different one.");
+      return;
+    }
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
       ...(currentPassword ? { current_password: currentPassword } : {}),
@@ -145,10 +200,46 @@ function AccountPage() {
     }
     setCurrentPassword("");
     setNewPassword("");
+    setBreach(null);
     toast.success(hasPassword ? "Password updated." : "Password set — you can now sign in with email.");
     await logActivity("password_changed");
     refresh();
   }
+
+  async function exportData() {
+    setBusy("export");
+    try {
+      const { filename, json } = await buildAccountExport();
+      downloadFile(filename, json);
+      toast.success("Your account data has been downloaded.");
+      await logActivity("data_exported", filename);
+      loadActivity();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not build the export.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function revokeOne(session: SessionRow) {
+    setBusy(`session:${session.id}`);
+    try {
+      const ok = await revokeSession(session.id);
+      if (!ok) {
+        toast.error("That session is no longer active.");
+      } else {
+        toast.success("Session revoked — that device has been signed out.");
+        await logActivity("session_revoked", labelFromUserAgent(session.user_agent));
+        loadActivity();
+      }
+      await loadSessions();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not revoke that session.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
 
   async function sendResetLink() {
     if (!user?.email) return;
@@ -250,13 +341,8 @@ function AccountPage() {
   }
 
   const verified = Boolean(user?.email_confirmed_at);
-  const recentDevices = Array.from(
-    new Map(
-      activity
-        .filter((a) => a.event === "sign_in" || a.event === "sign_up")
-        .map((a) => [a.device ?? "Unknown device", a]),
-    ).values(),
-  ).slice(0, 5);
+
+
 
 
   if (loading) {
@@ -472,13 +558,25 @@ function AccountPage() {
             onChange={(e) => setNewPassword(e.target.value)}
             className="t-body h-11 w-full rounded-xl border border-border px-4 outline-none focus:border-accent"
           />
+          <PasswordStrength
+            password={newPassword}
+            strength={strength}
+            breach={breach}
+            checking={checkingBreach}
+          />
           <button
             type="submit"
-            disabled={busy === "password"}
+            disabled={
+              busy === "password" ||
+              checkingBreach ||
+              strength.score < MIN_SCORE ||
+              Boolean(breach && breach > 0)
+            }
             className="btn-outline-ink mt-4 w-full hover:bg-secondary disabled:opacity-50"
           >
             {hasPassword ? "Update password" : "Set password"}
           </button>
+
         </form>
       </section>
 
@@ -511,9 +609,10 @@ function AccountPage() {
           <div>
             <h2 className="t-heading">Active sessions</h2>
             <p className="t-meta mt-2">
-              Signing out everywhere revokes every refresh token, including other browsers and
-              devices.
+              Revoke a single device below, or sign out everywhere to invalidate every refresh
+              token at once.
             </p>
+
           </div>
           <button
             type="button"
@@ -526,8 +625,8 @@ function AccountPage() {
         </div>
 
         <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
-          <li className="flex items-center justify-between gap-4 px-5 py-4">
-            <div className="flex items-center gap-3">
+          {sessions.length === 0 && (
+            <li className="flex items-center gap-3 px-5 py-4">
               <Monitor className="h-4.5 w-4.5 text-accent" strokeWidth={2} />
               <div>
                 <p className="t-item">{describeDevice()}</p>
@@ -535,27 +634,67 @@ function AccountPage() {
                   This device{sessionSince ? ` · token renews ${sessionSince}` : ""}
                 </p>
               </div>
-            </div>
-            <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Current</span>
-          </li>
-          {recentDevices
-            .filter((d) => d.device !== describeDevice())
-            .map((d) => (
-              <li key={d.id} className="flex items-center justify-between gap-4 px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <Monitor className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
-                  <div>
-                    <p className="t-item">{d.device ?? "Unknown device"}</p>
-                    <p className="t-caption mt-0.5">
-                      Last sign-in {new Date(d.created_at).toLocaleString()}
-                    </p>
-                  </div>
+            </li>
+          )}
+          {sessions.map((s) => (
+            <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+              <div className="flex items-center gap-3">
+                <Monitor
+                  className={`h-4.5 w-4.5 ${s.is_current ? "text-accent" : "text-muted-foreground"}`}
+                  strokeWidth={2}
+                />
+                <div>
+                  <p className="t-item">{labelFromUserAgent(s.user_agent)}</p>
+                  <p className="t-caption mt-0.5">
+                    {[
+                      s.is_current ? "This device" : null,
+                      s.ip ? `IP ${s.ip}` : null,
+                      s.refreshed_at
+                        ? `Last active ${new Date(s.refreshed_at).toLocaleString()}`
+                        : `Started ${new Date(s.created_at).toLocaleString()}`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
                 </div>
-                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Signed in</span>
-              </li>
-            ))}
+              </div>
+              {s.is_current ? (
+                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Current</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => revokeOne(s)}
+                  disabled={busy === `session:${s.id}`}
+                  className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-50"
+                >
+                  <XCircle className="h-3.5 w-3.5" strokeWidth={2} />
+                  Revoke
+                </button>
+              )}
+            </li>
+          ))}
         </ul>
       </section>
+
+      <section className="panel flex flex-wrap items-start justify-between gap-4 p-7">
+        <div className="max-w-[52ch]">
+          <h2 className="t-heading">Export your data</h2>
+          <p className="t-meta mt-2">
+            Downloads a JSON file with your profile, sign-in methods, active sessions and full
+            activity log. Credentials and tokens are never included.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={exportData}
+          disabled={busy === "export"}
+          className="btn-ink hover:opacity-90 disabled:opacity-60"
+        >
+          <Download className="h-4 w-4" strokeWidth={2} />
+          Download my data
+        </button>
+      </section>
+
 
       <section className="panel p-7">
         <div className="flex items-center gap-2">
