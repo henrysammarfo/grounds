@@ -704,18 +704,62 @@ function AccountPage() {
             </p>
 
           </div>
-          <button
-            type="button"
-            onClick={signOutEverywhere}
-            disabled={busy === "global"}
-            className="btn-outline-ink hover:bg-secondary disabled:opacity-50"
-          >
-            Sign out of all devices
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={exportSessionsCsv}
+              disabled={filteredSessions.length === 0}
+              className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+            >
+              <Sheet className="h-3.5 w-3.5" strokeWidth={2} />
+              Export CSV
+            </button>
+            <button
+              type="button"
+              onClick={signOutEverywhere}
+              disabled={busy === "global"}
+              className="btn-outline-ink hover:bg-secondary disabled:opacity-50"
+            >
+              Sign out of all devices
+            </button>
+          </div>
         </div>
 
-        <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
+        <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              strokeWidth={2}
+            />
+            <input
+              aria-label="Search sessions"
+              value={sesQuery}
+              onChange={(e) => {
+                setSesQuery(e.target.value);
+                setSesPage(1);
+              }}
+              placeholder="Search by device, browser or IP…"
+              className={`${filterInput} pl-10`}
+            />
+          </div>
+          <select
+            aria-label="Filter sessions"
+            value={sesScope}
+            onChange={(e) => {
+              setSesScope(e.target.value);
+              setSesPage(1);
+            }}
+            className={`${filterInput} sm:w-52`}
+          >
+            <option value="all">All sessions</option>
+            <option value="current">This device</option>
+            <option value="other">Other devices</option>
+          </select>
+        </div>
+
+        <ul className="mt-4 divide-y divide-border-row rounded-xl border border-border-row">
           {sessions.length === 0 && (
+
             <li className="flex items-center gap-3 px-5 py-4">
               <Monitor className="h-4.5 w-4.5 text-accent" strokeWidth={2} />
               <div>
