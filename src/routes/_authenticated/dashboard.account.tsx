@@ -992,3 +992,48 @@ function GoogleGlyph() {
     </svg>
   );
 }
+
+function Pager({
+  label,
+  page,
+  pages,
+  total,
+  onChange,
+}: {
+  label: string;
+  page: number;
+  pages: number;
+  total: number;
+  onChange: (page: number) => void;
+}) {
+  if (total === 0) return null;
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <p className="t-caption">
+        Page {page} of {pages} · {total} {label}
+      </p>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Previous page"
+          onClick={() => onChange(Math.max(1, page - 1))}
+          disabled={page <= 1}
+          className="t-ui inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          Prev
+        </button>
+        <button
+          type="button"
+          aria-label="Next page"
+          onClick={() => onChange(Math.min(pages, page + 1))}
+          disabled={page >= pages}
+          className="t-ui inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+        >
+          Next
+          <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />
+        </button>
+      </div>
+    </div>
+  );
+}
