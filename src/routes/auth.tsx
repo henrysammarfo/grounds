@@ -6,6 +6,7 @@ import { GroundsWordmark } from "@/components/brand/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { setRememberMe } from "@/lib/auth-session";
+import { logActivity } from "@/lib/account-activity";
 import { cn } from "@/lib/utils";
 
 const title = "Sign in or create your GROUNDS account";
@@ -76,10 +77,12 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        await logActivity("sign_up", email);
         toast.success("Account created — welcome to GROUNDS.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        await logActivity("sign_in", "Email and password");
       }
       navigate({ to: "/dashboard", replace: true });
     } catch (err) {
@@ -101,6 +104,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
+    await logActivity("sign_in", "Google");
     navigate({ to: "/dashboard", replace: true });
   }
 
