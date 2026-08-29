@@ -72,12 +72,21 @@ function AccountPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [sessionSince, setSessionSince] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState("");
+  const [breach, setBreach] = useState<number | null>(null);
+  const [checkingBreach, setCheckingBreach] = useState(false);
   const navigate = useNavigate();
+
+  const strength = useMemo(() => scorePassword(newPassword), [newPassword]);
 
   async function loadActivity() {
     setActivity(await fetchActivity(25));
+  }
+
+  async function loadSessions() {
+    setSessions(await fetchSessions());
   }
 
   async function refresh() {
@@ -94,7 +103,7 @@ function AccountPage() {
         .maybeSingle();
       setDisplayName(profile?.display_name ?? "");
       setAvatarUrl(profile?.avatar_url ?? "");
-      await loadActivity();
+      await Promise.all([loadActivity(), loadSessions()]);
     }
     setLoading(false);
   }
@@ -107,6 +116,28 @@ function AccountPage() {
       if (expires) setSessionSince(new Date(expires * 1000).toLocaleString());
     });
   }, []);
+
+  // Debounced breach lookup (k-anonymity: only a hash prefix leaves the browser).
+  useEffect(() => {
+    if (newPassword.length < 6) {
+      setBreach(null);
+      setCheckingBreach(false);
+      return;
+    }
+    setCheckingBreach(true);
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const count = await breachCount(newPassword);
+      if (cancelled) return;
+      setBreach(count);
+      setCheckingBreach(false);
+    }, 450);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [newPassword]);
+
 
   const hasPassword = identities.some((i) => i.provider === "email");
   const googleIdentity = identities.find((i) => i.provider === "google");
