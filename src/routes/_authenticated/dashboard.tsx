@@ -110,11 +110,21 @@ function DashboardLayout() {
           <p className="t-item">Workspace · acme engineering</p>
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
+            <span className="t-meta hidden sm:block">{email}</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-on-dark">
-              AM
+              {initials}
             </span>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary"
+            >
+              <LogOut className="h-3.5 w-3.5" strokeWidth={2} />
+              Sign out
+            </button>
           </div>
         </header>
+
         <main className="p-6">
           <Outlet />
         </main>
