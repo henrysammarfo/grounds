@@ -25,6 +25,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardEvaluationRouteImport } from './routes/dashboard.evaluation'
 import { Route as DashboardGateRouteImport } from './routes/dashboard.gate'
 import { Route as DashboardRunsRouteImport } from './routes/dashboard.runs'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardTrajectoriesRouteImport } from './routes/dashboard.trajectories'
 import { Route as DashboardCasesIndexRouteImport } from './routes/dashboard.cases.index'
 import { Route as DashboardCasesCaseIdRouteImport } from './routes/dashboard.cases.$caseId'
@@ -109,6 +110,11 @@ const DashboardRunsRoute = DashboardRunsRouteImport.update({
   path: '/runs',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardTrajectoriesRoute = DashboardTrajectoriesRouteImport.update({
   id: '/trajectories',
   path: '/trajectories',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/evaluation': typeof DashboardEvaluationRoute
   '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/runs': typeof DashboardRunsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/dashboard/evaluation': typeof DashboardEvaluationRoute
   '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/runs': typeof DashboardRunsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/dashboard/evaluation': typeof DashboardEvaluationRoute
   '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/runs': typeof DashboardRunsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
+    | '/dashboard/settings'
     | '/dashboard/trajectories'
     | '/blog/'
     | '/dashboard/'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
+    | '/dashboard/settings'
     | '/dashboard/trajectories'
     | '/blog'
     | '/dashboard'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/dashboard/evaluation'
     | '/dashboard/gate'
     | '/dashboard/runs'
+    | '/dashboard/settings'
     | '/dashboard/trajectories'
     | '/blog/'
     | '/dashboard/'
@@ -382,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRunsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/trajectories': {
       id: '/dashboard/trajectories'
       path: '/trajectories'
@@ -410,6 +429,7 @@ interface DashboardRouteChildren {
   DashboardEvaluationRoute: typeof DashboardEvaluationRoute
   DashboardGateRoute: typeof DashboardGateRoute
   DashboardRunsRoute: typeof DashboardRunsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTrajectoriesRoute: typeof DashboardTrajectoriesRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardCasesCaseIdRoute: typeof DashboardCasesCaseIdRoute
@@ -420,6 +440,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardEvaluationRoute: DashboardEvaluationRoute,
   DashboardGateRoute: DashboardGateRoute,
   DashboardRunsRoute: DashboardRunsRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTrajectoriesRoute: DashboardTrajectoriesRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardCasesCaseIdRoute: DashboardCasesCaseIdRoute,
