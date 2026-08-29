@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { clearRememberMe } from "@/lib/auth-session";
 
 import {
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
   X,
   Bell,
   LogOut,
+  UserRound,
 
 } from "lucide-react";
 import { GroundsWordmark } from "@/components/brand/Logo";
@@ -68,6 +70,7 @@ function DashboardLayout() {
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
+    clearRememberMe();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
