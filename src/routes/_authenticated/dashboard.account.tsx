@@ -4,6 +4,8 @@ import type { UserIdentity, User } from "@supabase/supabase-js";
 import {
   AlertTriangle,
   BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
   Download,
   History,
   KeyRound,
@@ -12,7 +14,9 @@ import {
   Mail,
   MailWarning,
   Monitor,
+  Search,
   ShieldCheck,
+  Sheet,
   Trash2,
   UserRound,
   XCircle,
@@ -34,9 +38,24 @@ import {
   type SessionRow,
 } from "@/lib/account-sessions";
 import { buildAccountExport, downloadFile } from "@/lib/account-export";
+import { activityToCsv, csvFilename, sessionsToCsv } from "@/lib/account-csv";
 import { MIN_SCORE, breachCount, scorePassword } from "@/lib/password-strength";
 import { PasswordStrength } from "@/components/dash/PasswordStrength";
 import { deleteMyAccount } from "@/lib/account.functions";
+
+const PAGE_SIZE = 8;
+
+const RANGES = [
+  { value: "all", label: "All time", days: 0 },
+  { value: "24h", label: "Last 24 hours", days: 1 },
+  { value: "7d", label: "Last 7 days", days: 7 },
+  { value: "30d", label: "Last 30 days", days: 30 },
+  { value: "90d", label: "Last 90 days", days: 90 },
+] as const;
+
+const filterInput =
+  "t-body h-10 w-full rounded-xl border border-border bg-transparent px-3.5 outline-none focus:border-accent";
+
 
 
 export const Route = createFileRoute("/_authenticated/dashboard/account")({
@@ -77,13 +96,84 @@ function AccountPage() {
   const [confirmDelete, setConfirmDelete] = useState("");
   const [breach, setBreach] = useState<number | null>(null);
   const [checkingBreach, setCheckingBreach] = useState(false);
+  const [actQuery, setActQuery] = useState("");
+  const [actEvent, setActEvent] = useState("all");
+  const [actRange, setActRange] = useState<string>("all");
+  const [actPage, setActPage] = useState(1);
+  const [sesQuery, setSesQuery] = useState("");
+  const [sesScope, setSesScope] = useState("all");
+  const [sesPage, setSesPage] = useState(1);
   const navigate = useNavigate();
 
   const strength = useMemo(() => scorePassword(newPassword), [newPassword]);
 
-  async function loadActivity() {
-    setActivity(await fetchActivity(25));
+  // ---- Activity filtering + pagination -------------------------------------
+  const eventOptions = useMemo(
+    () => Array.from(new Set(activity.map((a) => a.event))).sort(),
+    [activity],
+  );
+
+  const filteredActivity = useMemo(() => {
+    const q = actQuery.trim().toLowerCase();
+    const days = RANGES.find((r) => r.value === actRange)?.days ?? 0;
+    const cutoff = days ? Date.now() - days * 86_400_000 : 0;
+    return activity.filter((a) => {
+      if (actEvent !== "all" && a.event !== actEvent) return false;
+      if (cutoff && new Date(a.created_at).getTime() < cutoff) return false;
+      if (!q) return true;
+      return [EVENT_LABELS[a.event] ?? a.event, a.event, a.detail, a.device]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [activity, actQuery, actEvent, actRange]);
+
+  const actPages = Math.max(1, Math.ceil(filteredActivity.length / PAGE_SIZE));
+  const actPageSafe = Math.min(actPage, actPages);
+  const activityPage = filteredActivity.slice(
+    (actPageSafe - 1) * PAGE_SIZE,
+    actPageSafe * PAGE_SIZE,
+  );
+
+  // ---- Session filtering + pagination --------------------------------------
+  const filteredSessions = useMemo(() => {
+    const q = sesQuery.trim().toLowerCase();
+    return sessions.filter((s) => {
+      if (sesScope === "current" && !s.is_current) return false;
+      if (sesScope === "other" && s.is_current) return false;
+      if (!q) return true;
+      return [labelFromUserAgent(s.user_agent), s.user_agent, s.ip]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [sessions, sesQuery, sesScope]);
+
+  const sesPages = Math.max(1, Math.ceil(filteredSessions.length / PAGE_SIZE));
+  const sesPageSafe = Math.min(sesPage, sesPages);
+  const sessionsPage = filteredSessions.slice(
+    (sesPageSafe - 1) * PAGE_SIZE,
+    sesPageSafe * PAGE_SIZE,
+  );
+
+  function exportActivityCsv() {
+    downloadFile(csvFilename("activity"), activityToCsv(filteredActivity), "text/csv;charset=utf-8");
+    toast.success(`Exported ${filteredActivity.length} activity rows as CSV.`);
+    logActivity("data_exported", `activity CSV (${filteredActivity.length} rows)`).then(
+      loadActivity,
+    );
   }
+
+  function exportSessionsCsv() {
+    downloadFile(csvFilename("sessions"), sessionsToCsv(filteredSessions), "text/csv;charset=utf-8");
+    toast.success(`Exported ${filteredSessions.length} sessions as CSV.`);
+    logActivity("data_exported", `sessions CSV (${filteredSessions.length} rows)`).then(
+      loadActivity,
+    );
+  }
+
+  async function loadActivity() {
+    setActivity(await fetchActivity(500));
+  }
+
 
   async function loadSessions() {
     setSessions(await fetchSessions());
@@ -614,17 +704,60 @@ function AccountPage() {
             </p>
 
           </div>
-          <button
-            type="button"
-            onClick={signOutEverywhere}
-            disabled={busy === "global"}
-            className="btn-outline-ink hover:bg-secondary disabled:opacity-50"
-          >
-            Sign out of all devices
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={exportSessionsCsv}
+              disabled={filteredSessions.length === 0}
+              className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+            >
+              <Sheet className="h-3.5 w-3.5" strokeWidth={2} />
+              Export CSV
+            </button>
+            <button
+              type="button"
+              onClick={signOutEverywhere}
+              disabled={busy === "global"}
+              className="btn-outline-ink hover:bg-secondary disabled:opacity-50"
+            >
+              Sign out of all devices
+            </button>
+          </div>
         </div>
 
-        <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
+        <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              strokeWidth={2}
+            />
+            <input
+              aria-label="Search sessions"
+              value={sesQuery}
+              onChange={(e) => {
+                setSesQuery(e.target.value);
+                setSesPage(1);
+              }}
+              placeholder="Search by device, browser or IP…"
+              className={`${filterInput} pl-10`}
+            />
+          </div>
+          <select
+            aria-label="Filter sessions"
+            value={sesScope}
+            onChange={(e) => {
+              setSesScope(e.target.value);
+              setSesPage(1);
+            }}
+            className={`${filterInput} sm:w-52`}
+          >
+            <option value="all">All sessions</option>
+            <option value="current">This device</option>
+            <option value="other">Other devices</option>
+          </select>
+        </div>
+
+        <ul className="mt-4 divide-y divide-border-row rounded-xl border border-border-row">
           {sessions.length === 0 && (
             <li className="flex items-center gap-3 px-5 py-4">
               <Monitor className="h-4.5 w-4.5 text-accent" strokeWidth={2} />
@@ -636,7 +769,12 @@ function AccountPage() {
               </div>
             </li>
           )}
-          {sessions.map((s) => (
+          {sessions.length > 0 && filteredSessions.length === 0 && (
+            <li className="px-5 py-6">
+              <p className="t-caption">No sessions match these filters.</p>
+            </li>
+          )}
+          {sessionsPage.map((s) => (
             <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
               <div className="flex items-center gap-3">
                 <Monitor
@@ -674,7 +812,16 @@ function AccountPage() {
             </li>
           ))}
         </ul>
+
+        <Pager
+          label="sessions"
+          page={sesPageSafe}
+          pages={sesPages}
+          total={filteredSessions.length}
+          onChange={setSesPage}
+        />
       </section>
+
 
       <section className="panel flex flex-wrap items-start justify-between gap-4 p-7">
         <div className="max-w-[52ch]">
@@ -697,31 +844,110 @@ function AccountPage() {
 
 
       <section className="panel p-7">
-        <div className="flex items-center gap-2">
-          <History className="h-4 w-4 text-accent" strokeWidth={2} />
-          <h2 className="t-heading">Account activity</h2>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <History className="h-4 w-4 text-accent" strokeWidth={2} />
+              <h2 className="t-heading">Account activity</h2>
+            </div>
+            <p className="t-meta mt-2">
+              Recent sign-ins, credential changes and password resets on this account.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={exportActivityCsv}
+            disabled={filteredActivity.length === 0}
+            className="t-ui inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+          >
+            <Sheet className="h-3.5 w-3.5" strokeWidth={2} />
+            Export CSV
+          </button>
         </div>
-        <p className="t-meta mt-2">
-          Recent sign-ins, credential changes and password resets on this account.
-        </p>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              strokeWidth={2}
+            />
+            <input
+              aria-label="Search activity"
+              value={actQuery}
+              onChange={(e) => {
+                setActQuery(e.target.value);
+                setActPage(1);
+              }}
+              placeholder="Search events, details or devices…"
+              className={`${filterInput} pl-10`}
+            />
+          </div>
+          <select
+            aria-label="Filter by event type"
+            value={actEvent}
+            onChange={(e) => {
+              setActEvent(e.target.value);
+              setActPage(1);
+            }}
+            className={`${filterInput} sm:w-56`}
+          >
+            <option value="all">All event types</option>
+            {eventOptions.map((ev) => (
+              <option key={ev} value={ev}>
+                {EVENT_LABELS[ev] ?? ev}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by date range"
+            value={actRange}
+            onChange={(e) => {
+              setActRange(e.target.value);
+              setActPage(1);
+            }}
+            className={`${filterInput} sm:w-44`}
+          >
+            {RANGES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {activity.length === 0 ? (
           <p className="t-caption mt-6">No activity recorded yet.</p>
+        ) : filteredActivity.length === 0 ? (
+          <p className="t-caption mt-6">No events match these filters.</p>
         ) : (
-          <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
-            {activity.map((a) => (
-              <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3.5">
-                <div>
-                  <p className="t-item">{EVENT_LABELS[a.event] ?? a.event}</p>
-                  <p className="t-caption mt-0.5">
-                    {[a.detail, a.device].filter(Boolean).join(" · ") || "—"}
-                  </p>
-                </div>
-                <span className="t-caption">{new Date(a.created_at).toLocaleString()}</span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 divide-y divide-border-row rounded-xl border border-border-row">
+              {activityPage.map((a) => (
+                <li
+                  key={a.id}
+                  className="flex flex-wrap items-center justify-between gap-2 px-5 py-3.5"
+                >
+                  <div>
+                    <p className="t-item">{EVENT_LABELS[a.event] ?? a.event}</p>
+                    <p className="t-caption mt-0.5">
+                      {[a.detail, a.device].filter(Boolean).join(" · ") || "—"}
+                    </p>
+                  </div>
+                  <span className="t-caption">{new Date(a.created_at).toLocaleString()}</span>
+                </li>
+              ))}
+            </ul>
+            <Pager
+              label="events"
+              page={actPageSafe}
+              pages={actPages}
+              total={filteredActivity.length}
+              onChange={setActPage}
+            />
+          </>
         )}
       </section>
+
 
       <section className="panel border-destructive/40 p-7">
         <div className="flex items-center gap-2">
@@ -764,5 +990,50 @@ function GoogleGlyph() {
       <path fill="#FBBC05" d="M5.2 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3l-4-3.1C.4 8.2 0 10 0 12s.4 3.8 1.2 5.4l4-3.1z" />
       <path fill="#EA4335" d="M12 4.8c2.3 0 3.8 1 4.7 1.8l3.4-3.3C18 1.2 15.2 0 12 0 7.3 0 3.2 2.7 1.2 6.6l4 3.1c1-2.9 3.6-4.9 6.8-4.9z" />
     </svg>
+  );
+}
+
+function Pager({
+  label,
+  page,
+  pages,
+  total,
+  onChange,
+}: {
+  label: string;
+  page: number;
+  pages: number;
+  total: number;
+  onChange: (page: number) => void;
+}) {
+  if (total === 0) return null;
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <p className="t-caption">
+        Page {page} of {pages} · {total} {label}
+      </p>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Previous page"
+          onClick={() => onChange(Math.max(1, page - 1))}
+          disabled={page <= 1}
+          className="t-ui inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          Prev
+        </button>
+        <button
+          type="button"
+          aria-label="Next page"
+          onClick={() => onChange(Math.min(pages, page + 1))}
+          disabled={page >= pages}
+          className="t-ui inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+        >
+          Next
+          <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />
+        </button>
+      </div>
+    </div>
   );
 }
