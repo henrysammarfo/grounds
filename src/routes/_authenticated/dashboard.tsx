@@ -1,5 +1,8 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
 import {
   LayoutDashboard,
   FolderGit2,
