@@ -759,7 +759,6 @@ function AccountPage() {
 
         <ul className="mt-4 divide-y divide-border-row rounded-xl border border-border-row">
           {sessions.length === 0 && (
-
             <li className="flex items-center gap-3 px-5 py-4">
               <Monitor className="h-4.5 w-4.5 text-accent" strokeWidth={2} />
               <div>
@@ -770,7 +769,12 @@ function AccountPage() {
               </div>
             </li>
           )}
-          {sessions.map((s) => (
+          {sessions.length > 0 && filteredSessions.length === 0 && (
+            <li className="px-5 py-6">
+              <p className="t-caption">No sessions match these filters.</p>
+            </li>
+          )}
+          {sessionsPage.map((s) => (
             <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
               <div className="flex items-center gap-3">
                 <Monitor
@@ -808,7 +812,16 @@ function AccountPage() {
             </li>
           ))}
         </ul>
+
+        <Pager
+          label="sessions"
+          page={sesPageSafe}
+          pages={sesPages}
+          total={filteredSessions.length}
+          onChange={setSesPage}
+        />
       </section>
+
 
       <section className="panel flex flex-wrap items-start justify-between gap-4 p-7">
         <div className="max-w-[52ch]">
