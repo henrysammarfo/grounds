@@ -1,18 +1,31 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { UserIdentity, User } from "@supabase/supabase-js";
 import {
+  AlertTriangle,
   BadgeCheck,
+  History,
   KeyRound,
   Link2,
   Link2Off,
   Mail,
+  MailWarning,
+  Monitor,
   ShieldCheck,
+  Trash2,
   UserRound,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { getRememberMe, setRememberMe } from "@/lib/auth-session";
+import { getRememberMe, setRememberMe, clearRememberMe } from "@/lib/auth-session";
+import {
+  EVENT_LABELS,
+  describeDevice,
+  fetchActivity,
+  logActivity,
+  type ActivityRow,
+} from "@/lib/account-activity";
+import { deleteMyAccount } from "@/lib/account.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard/account")({
   head: () => ({
@@ -46,6 +59,14 @@ function AccountPage() {
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [sessionSince, setSessionSince] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState("");
+  const navigate = useNavigate();
+
+  async function loadActivity() {
+    setActivity(await fetchActivity(25));
+  }
 
   async function refresh() {
     const { data } = await supabase.auth.getUser();
@@ -61,6 +82,7 @@ function AccountPage() {
         .maybeSingle();
       setDisplayName(profile?.display_name ?? "");
       setAvatarUrl(profile?.avatar_url ?? "");
+      await loadActivity();
     }
     setLoading(false);
   }
@@ -68,6 +90,10 @@ function AccountPage() {
   useEffect(() => {
     setRemember(getRememberMe());
     refresh();
+    supabase.auth.getSession().then(({ data }) => {
+      const expires = data.session?.expires_at;
+      if (expires) setSessionSince(new Date(expires * 1000).toLocaleString());
+    });
   }, []);
 
   const hasPassword = identities.some((i) => i.provider === "email");
@@ -82,7 +108,11 @@ function AccountPage() {
       .upsert({ id: user.id, display_name: displayName, avatar_url: avatarUrl || null });
     setBusy(null);
     if (error) toast.error(error.message);
-    else toast.success("Profile saved.");
+    else {
+      toast.success("Profile saved.");
+      await logActivity("profile_updated", displayName || undefined);
+      loadActivity();
+    }
   }
 
   async function changeEmail(e: React.FormEvent) {
@@ -94,7 +124,11 @@ function AccountPage() {
     );
     setBusy(null);
     if (error) toast.error(error.message);
-    else toast.success("Confirm the change from the link sent to your new address.");
+    else {
+      toast.success("Confirm the change from the link sent to your new address.");
+      await logActivity("email_change_requested", newEmail);
+      loadActivity();
+    }
   }
 
   async function changePassword(e: React.FormEvent) {
@@ -112,6 +146,7 @@ function AccountPage() {
     setCurrentPassword("");
     setNewPassword("");
     toast.success(hasPassword ? "Password updated." : "Password set — you can now sign in with email.");
+    await logActivity("password_changed");
     refresh();
   }
 
@@ -123,7 +158,57 @@ function AccountPage() {
     });
     setBusy(null);
     if (error) toast.error(error.message);
-    else toast.success(`Reset link sent to ${user.email}.`);
+    else {
+      toast.success(`Reset link sent to ${user.email}.`);
+      await logActivity("password_reset_requested", user.email);
+      loadActivity();
+    }
+  }
+
+  async function resendVerification() {
+    if (!user?.email) return;
+    setBusy("verify");
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: user.email,
+      options: { emailRedirectTo: `${window.location.origin}/dashboard/account` },
+    });
+    setBusy(null);
+    if (error) toast.error(error.message);
+    else {
+      toast.success(`Verification email sent to ${user.email}.`);
+      await logActivity("email_verification_sent", user.email);
+      loadActivity();
+    }
+  }
+
+  async function signOutEverywhere() {
+    setBusy("global");
+    await logActivity("sign_out_all");
+    const { error } = await supabase.auth.signOut({ scope: "global" });
+    setBusy(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    clearRememberMe();
+    toast.success("Signed out on every device.");
+    navigate({ to: "/auth", replace: true });
+  }
+
+  async function deleteAccount() {
+    setBusy("delete");
+    try {
+      await deleteMyAccount();
+      clearRememberMe();
+      await supabase.auth.signOut();
+      toast.success("Your account has been permanently deleted.");
+      navigate({ to: "/", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not delete the account.");
+    } finally {
+      setBusy(null);
+    }
   }
 
   async function linkGoogle() {
@@ -134,6 +219,7 @@ function AccountPage() {
     });
     setBusy(null);
     if (error) toast.error(error.message);
+    else await logActivity("google_linked");
   }
 
   async function unlinkGoogle() {
@@ -148,6 +234,7 @@ function AccountPage() {
     if (error) toast.error(error.message);
     else {
       toast.success("Google disconnected.");
+      await logActivity("google_unlinked");
       refresh();
     }
   }
@@ -162,6 +249,16 @@ function AccountPage() {
     );
   }
 
+  const verified = Boolean(user?.email_confirmed_at);
+  const recentDevices = Array.from(
+    new Map(
+      activity
+        .filter((a) => a.event === "sign_in" || a.event === "sign_up")
+        .map((a) => [a.device ?? "Unknown device", a]),
+    ).values(),
+  ).slice(0, 5);
+
+
   if (loading) {
     return <p className="t-meta">Loading your account…</p>;
   }
@@ -174,6 +271,28 @@ function AccountPage() {
           Your profile, sign-in methods and session preferences.
         </p>
       </header>
+
+      {!verified && (
+        <section className="panel flex flex-wrap items-start gap-4 border-warning/40 p-6">
+          <MailWarning className="mt-0.5 h-5 w-5 shrink-0 text-accent" strokeWidth={2} />
+          <div className="flex-1 min-w-[240px]">
+            <p className="t-item">Verify your email address</p>
+            <p className="t-caption mt-1">
+              We sent a confirmation link to {user?.email}. Verifying keeps password resets and
+              security alerts working.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={resendVerification}
+            disabled={busy === "verify"}
+            className="btn-ink hover:opacity-90 disabled:opacity-60"
+          >
+            <Mail className="h-4 w-4" strokeWidth={2} />
+            Resend verification
+          </button>
+        </section>
+      )}
 
       <section className="panel p-7">
         <div className="flex items-start gap-4">
@@ -385,6 +504,114 @@ function AccountPage() {
           <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
           Sessions are stored as short-lived tokens and refreshed automatically.
         </p>
+      </section>
+
+      <section className="panel p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="t-heading">Active sessions</h2>
+            <p className="t-meta mt-2">
+              Signing out everywhere revokes every refresh token, including other browsers and
+              devices.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={signOutEverywhere}
+            disabled={busy === "global"}
+            className="btn-outline-ink hover:bg-secondary disabled:opacity-50"
+          >
+            Sign out of all devices
+          </button>
+        </div>
+
+        <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
+          <li className="flex items-center justify-between gap-4 px-5 py-4">
+            <div className="flex items-center gap-3">
+              <Monitor className="h-4.5 w-4.5 text-accent" strokeWidth={2} />
+              <div>
+                <p className="t-item">{describeDevice()}</p>
+                <p className="t-caption mt-0.5">
+                  This device{sessionSince ? ` · token renews ${sessionSince}` : ""}
+                </p>
+              </div>
+            </div>
+            <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Current</span>
+          </li>
+          {recentDevices
+            .filter((d) => d.device !== describeDevice())
+            .map((d) => (
+              <li key={d.id} className="flex items-center justify-between gap-4 px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <Monitor className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
+                  <div>
+                    <p className="t-item">{d.device ?? "Unknown device"}</p>
+                    <p className="t-caption mt-0.5">
+                      Last sign-in {new Date(d.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Signed in</span>
+              </li>
+            ))}
+        </ul>
+      </section>
+
+      <section className="panel p-7">
+        <div className="flex items-center gap-2">
+          <History className="h-4 w-4 text-accent" strokeWidth={2} />
+          <h2 className="t-heading">Account activity</h2>
+        </div>
+        <p className="t-meta mt-2">
+          Recent sign-ins, credential changes and password resets on this account.
+        </p>
+        {activity.length === 0 ? (
+          <p className="t-caption mt-6">No activity recorded yet.</p>
+        ) : (
+          <ul className="mt-6 divide-y divide-border-row rounded-xl border border-border-row">
+            {activity.map((a) => (
+              <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3.5">
+                <div>
+                  <p className="t-item">{EVENT_LABELS[a.event] ?? a.event}</p>
+                  <p className="t-caption mt-0.5">
+                    {[a.detail, a.device].filter(Boolean).join(" · ") || "—"}
+                  </p>
+                </div>
+                <span className="t-caption">{new Date(a.created_at).toLocaleString()}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="panel border-destructive/40 p-7">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-destructive" strokeWidth={2} />
+          <h2 className="t-heading">Delete account</h2>
+        </div>
+        <p className="t-meta mt-2">
+          This permanently removes your profile, activity log and every connected credential
+          (email and Google). It cannot be undone.
+        </p>
+        <label htmlFor="confirm-delete" className="t-item mb-2 mt-5 block">
+          Type DELETE to confirm
+        </label>
+        <input
+          id="confirm-delete"
+          value={confirmDelete}
+          onChange={(e) => setConfirmDelete(e.target.value)}
+          placeholder="DELETE"
+          className="t-body h-11 w-full max-w-[280px] rounded-xl border border-border px-4 outline-none focus:border-destructive"
+        />
+        <button
+          type="button"
+          onClick={deleteAccount}
+          disabled={confirmDelete !== "DELETE" || busy === "delete"}
+          className="btn-ink mt-4 flex bg-destructive hover:opacity-90 disabled:opacity-40"
+        >
+          <Trash2 className="h-4 w-4" strokeWidth={2} />
+          Permanently delete my account
+        </button>
       </section>
     </div>
   );
