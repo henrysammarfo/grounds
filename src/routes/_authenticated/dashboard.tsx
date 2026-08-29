@@ -48,7 +48,9 @@ const nav = [
   { to: "/dashboard/trajectories", label: "Trajectories", icon: RouteIcon },
   { to: "/dashboard/evaluation", label: "Evaluation", icon: BarChart3 },
   { to: "/dashboard/gate", label: "Human gate", icon: ShieldCheck },
+  { to: "/dashboard/account", label: "Account", icon: UserRound },
   { to: "/dashboard/settings", label: "Settings", icon: Settings },
+
 ] as const;
 
 function DashboardLayout() {
@@ -133,9 +135,14 @@ function DashboardLayout() {
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
             <span className="t-meta hidden sm:block">{email}</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-on-dark">
+            <Link
+              to="/dashboard/account"
+              aria-label="Account settings"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-on-dark"
+            >
               {initials}
-            </span>
+            </Link>
+
             <button
               type="button"
               onClick={handleSignOut}
