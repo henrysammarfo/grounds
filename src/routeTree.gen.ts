@@ -23,6 +23,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardEvaluationRouteImport } from './routes/dashboard.evaluation'
+import { Route as DashboardGateRouteImport } from './routes/dashboard.gate'
 import { Route as DashboardRunsRouteImport } from './routes/dashboard.runs'
 import { Route as DashboardTrajectoriesRouteImport } from './routes/dashboard.trajectories'
 import { Route as DashboardCasesIndexRouteImport } from './routes/dashboard.cases.index'
@@ -98,6 +99,11 @@ const DashboardEvaluationRoute = DashboardEvaluationRouteImport.update({
   path: '/evaluation',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardGateRoute = DashboardGateRouteImport.update({
+  id: '/gate',
+  path: '/gate',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardRunsRoute = DashboardRunsRouteImport.update({
   id: '/runs',
   path: '/runs',
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/evaluation': typeof DashboardEvaluationRoute
+  '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/runs': typeof DashboardRunsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/evaluation': typeof DashboardEvaluationRoute
+  '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/runs': typeof DashboardRunsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog': typeof BlogIndexRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/evaluation': typeof DashboardEvaluationRoute
+  '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/runs': typeof DashboardRunsRoute
   '/dashboard/trajectories': typeof DashboardTrajectoriesRoute
   '/blog/': typeof BlogIndexRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/dashboard/evaluation'
+    | '/dashboard/gate'
     | '/dashboard/runs'
     | '/dashboard/trajectories'
     | '/blog/'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/dashboard/evaluation'
+    | '/dashboard/gate'
     | '/dashboard/runs'
     | '/dashboard/trajectories'
     | '/blog'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/dashboard/evaluation'
+    | '/dashboard/gate'
     | '/dashboard/runs'
     | '/dashboard/trajectories'
     | '/blog/'
@@ -356,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEvaluationRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/gate': {
+      id: '/dashboard/gate'
+      path: '/gate'
+      fullPath: '/dashboard/gate'
+      preLoaderRoute: typeof DashboardGateRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/runs': {
       id: '/dashboard/runs'
       path: '/runs'
@@ -389,6 +408,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardEvaluationRoute: typeof DashboardEvaluationRoute
+  DashboardGateRoute: typeof DashboardGateRoute
   DashboardRunsRoute: typeof DashboardRunsRoute
   DashboardTrajectoriesRoute: typeof DashboardTrajectoriesRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -398,6 +418,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardEvaluationRoute: DashboardEvaluationRoute,
+  DashboardGateRoute: DashboardGateRoute,
   DashboardRunsRoute: DashboardRunsRoute,
   DashboardTrajectoriesRoute: DashboardTrajectoriesRoute,
   DashboardIndexRoute: DashboardIndexRoute,
