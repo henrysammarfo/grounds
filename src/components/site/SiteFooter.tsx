@@ -24,7 +24,7 @@ const groups = [
     items: [
       { to: "/brand", label: "Brand & merch" },
       { to: "/contact", label: "Contact" },
-      { to: "/signin", label: "Sign in" },
+      { to: "/auth", label: "Sign in" },
     ],
   },
 ] as const;
