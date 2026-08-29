@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { UserIdentity, User } from "@supabase/supabase-js";
 import {
   AlertTriangle,
   BadgeCheck,
+  Download,
   History,
   KeyRound,
   Link2,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   Trash2,
   UserRound,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +27,17 @@ import {
   logActivity,
   type ActivityRow,
 } from "@/lib/account-activity";
+import {
+  fetchSessions,
+  labelFromUserAgent,
+  revokeSession,
+  type SessionRow,
+} from "@/lib/account-sessions";
+import { buildAccountExport, downloadFile } from "@/lib/account-export";
+import { MIN_SCORE, breachCount, scorePassword } from "@/lib/password-strength";
+import { PasswordStrength } from "@/components/dash/PasswordStrength";
 import { deleteMyAccount } from "@/lib/account.functions";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard/account")({
   head: () => ({
