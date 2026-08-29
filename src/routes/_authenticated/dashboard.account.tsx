@@ -563,13 +563,25 @@ function AccountPage() {
             onChange={(e) => setNewPassword(e.target.value)}
             className="t-body h-11 w-full rounded-xl border border-border px-4 outline-none focus:border-accent"
           />
+          <PasswordStrength
+            password={newPassword}
+            strength={strength}
+            breach={breach}
+            checking={checkingBreach}
+          />
           <button
             type="submit"
-            disabled={busy === "password"}
+            disabled={
+              busy === "password" ||
+              checkingBreach ||
+              strength.score < MIN_SCORE ||
+              Boolean(breach && breach > 0)
+            }
             className="btn-outline-ink mt-4 w-full hover:bg-secondary disabled:opacity-50"
           >
             {hasPassword ? "Update password" : "Set password"}
           </button>
+
         </form>
       </section>
 
