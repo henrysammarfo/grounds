@@ -86,7 +86,11 @@ function Home() {
 
       <section className="mx-auto grid max-w-[1080px] gap-px overflow-hidden rounded-2xl border border-border bg-border px-0 py-0 sm:grid-cols-3 sm:my-20 my-14 mx-6">
         {[
-          ["Claim accuracy", `${Math.round(metrics.grounds ?? 0) || 92}%`, "vs 61% one-shot baseline"],
+          [
+            "Claim accuracy",
+            `${Math.round(metrics.claimAccuracy.grounds * 100)}%`,
+            "vs 61% one-shot baseline",
+          ],
           ["Human minutes / case", "3.8", "down from 14.2"],
           ["Gold cases", `${metrics.casesRun}`, `${metrics.adversarialCases} adversarial`],
         ].map(([label, value, sub]) => (
