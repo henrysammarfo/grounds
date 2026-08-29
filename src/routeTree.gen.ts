@@ -21,6 +21,7 @@ import { Route as ProductRouteImport } from './routes/product'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,13 +83,18 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
   '/changelog': typeof ChangelogRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
@@ -96,13 +102,13 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/brand': typeof BrandRoute
   '/changelog': typeof ChangelogRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
@@ -110,6 +116,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,7 +124,7 @@ export interface FileRoutesById {
   '/brand': typeof BrandRoute
   '/changelog': typeof ChangelogRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/pricing': typeof PricingRoute
@@ -125,6 +132,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,13 +149,13 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/blog/'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/brand'
     | '/changelog'
     | '/contact'
-    | '/dashboard'
     | '/docs'
     | '/faq'
     | '/pricing'
@@ -155,6 +163,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/blog'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/blog/$slug'
     | '/blog/'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -176,7 +186,7 @@ export interface RootRouteChildren {
   BrandRoute: typeof BrandRoute
   ChangelogRoute: typeof ChangelogRoute
   ContactRoute: typeof ContactRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   DocsRoute: typeof DocsRoute
   FaqRoute: typeof FaqRoute
   PricingRoute: typeof PricingRoute
@@ -272,15 +282,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
+
+interface DashboardRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrandRoute: BrandRoute,
   ChangelogRoute: ChangelogRoute,
   ContactRoute: ContactRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   PricingRoute: PricingRoute,
