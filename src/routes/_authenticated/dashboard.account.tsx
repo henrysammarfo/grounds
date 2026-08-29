@@ -341,13 +341,8 @@ function AccountPage() {
   }
 
   const verified = Boolean(user?.email_confirmed_at);
-  const recentDevices = Array.from(
-    new Map(
-      activity
-        .filter((a) => a.event === "sign_in" || a.event === "sign_up")
-        .map((a) => [a.device ?? "Unknown device", a]),
-    ).values(),
-  ).slice(0, 5);
+
+
 
 
   if (loading) {
