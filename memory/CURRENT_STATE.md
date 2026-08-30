@@ -30,7 +30,8 @@ Source: `out/metrics.json` · `out/EVAL_TABLE.md`
 
 ## Demo video
 
-- **Multi-tenant judge film (2026-08-30):** `grounds_multi_tenant_judge_film_fresh_signup.mp4` (~1:58, visible cursor) — fresh signup + empty workspace + new pack + tenant isolation (screenshots in agent artifacts)
+- **Multi-tenant judge film (2026-08-30):** `grounds_multi_tenant_judge_full_demo_acts_0_5.mp4` (~3:53, Acts 0–5, visible cursor) — **use this one**
+- Short partial clip (sign-in only): `grounds_multi_tenant_judge_film_fresh_signup.mp4` (~1:58) — superseded
 - Cloud Computer Use film: `public/demo/grounds_product_film_acts_1_6.mp4` (~1:42)
 - Local click-through: `demo/GROUNDS_DEMO.mp4`
 - **Vercel auth fix:** `src/config/supabase-public.ts` fallback when `VITE_SUPABASE_*` missing on external deploy
