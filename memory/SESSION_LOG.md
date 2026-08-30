@@ -122,3 +122,21 @@ Create exactly 10 case directories with meta/claims/gold + synthetic `repo/` fix
 
 ### Next
 Baseline + agent + eval against these packs.
+
+---
+
+## 2026-08-30 — Live product film (Computer Use + video artifact)
+
+### Done
+- Added `VITE_GROUNDS_DEMO=1` auth bypass (`src/lib/demo-auth.ts`) for local dashboard walkthrough without Supabase
+- Demo header **Workspace · solo**; Settings Access shows solo operator + **Invite later**
+- Seeded human-gate queue (G-001/G-002) when `liveGateQueue` empty for film beats
+- Filmed continuous **~1:42** walkthrough Acts 1–6 on `http://127.0.0.1:8080`
+- Artifacts: `grounds_product_film_acts_1_6.mp4` + 6 screenshots in `/opt/cursor/artifacts/`
+
+### Film beats
+- All 27 beats completed (marketing → product → dashboard → claim packs → trajectories → runs → gate approve/deny → evaluation → settings → close)
+- Metrics shown from synced eval: baseline **0.1833** → GROUNDS **0.9083** (91% in UI)
+
+### Agent URL
+- https://cursor.com/agents/bc-297d00b1-fd27-4b5a-96b8-2c8ff5329bc6

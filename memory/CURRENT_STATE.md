@@ -23,5 +23,5 @@ Source: `out/metrics.json` · `out/EVAL_TABLE.md`
 
 ## Still for submit
 
-- Record ≤5 min video (`VIDEO_SCRIPT.md`)
+- ~~Record ≤5 min video (`VIDEO_SCRIPT.md`)~~ → **done** `grounds_product_film_acts_1_6.mp4` (~1:42, local demo auth)
 - Optional: `GROUNDS_INTERACTIVE_GATE=1` once to capture real human-min demo
