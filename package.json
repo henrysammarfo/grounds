@@ -18,7 +18,8 @@
     "contest:all": "python baseline/run.py --all --mode llm && python agent/run.py --all && python eval/score.py && node scripts/sync-eval-to-ui.mjs",
     "test:py": "python -m pytest -q",
     "demo:video": "node scripts/render-demo-video.mjs",
-    "demo:product": "node scripts/render-product-demo.mjs"
+    "demo:product": "node scripts/render-product-demo.mjs",
+    "demo:judge": "node scripts/render-judge-path-film.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"

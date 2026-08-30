@@ -40,6 +40,8 @@
 | Cost + human-min fully metered in runners | **yes** | `grounds_lib/llm.py`, gate, eval | Live AgentRouter run 2026-08-30 |
 | AgentRouter OpenAI-compatible base `https://agentrouter.org/v1` | **yes** | aftercut `KEYS_SETUP.md` + `agent-router.ts` | Used |
 | Fresh eval baseline 0.1833 → GROUNDS 0.9083 | **yes** | `out/metrics.json` 2026-08-30 | Cost avg $0.000105 vs $0.000336 |
+| Live app `grounds-alpha.vercel.app` loads for judges | **no** (2026-08-30) | Playwright: missing `VITE_SUPABASE_*` in prod bundle; curl HTML OK but client throws | Add env vars per `docs/DEPLOY_VERCEL.md`; redeploy |
+| Judge-path film with real signup/sign-in filmed | **yes** | Computer Use on temp Vercel deploy + `grounds_judge_path_signup_signin_film.mp4` (~85s) | Fix alpha URL before HackerEarth paste |
 | “North Korea can’t hack / zero bugs” | **rejected** | Security doctrine | Never claim; document residual risk |
 
 ---

@@ -170,3 +170,28 @@ Create exactly 10 case directories with meta/claims/gold + synthetic `repo/` fix
 
 ### Next
 Baseline + agent + eval against these packs.
+
+---
+
+## 2026-08-30 — Judge-path film (signup → sign-in → measured results)
+
+### Intent
+Film full judge/new-user path on live site with real auth (no `VITE_GROUNDS_DEMO`).
+
+### Blocker found
+- `https://grounds-alpha.vercel.app` **broken**: missing `VITE_SUPABASE_*` at Vercel build → React error boundary ("This page didn't load")
+- Verified via Playwright console: `Missing Supabase environment variable(s)`
+
+### Fix path
+- Recovered Supabase keys from git history (commit f61f141 `.env`, gitignored locally)
+- Built with `.env` present; anonymous `npx vercel deploy --temporary` → working URL
+- Added `docs/DEPLOY_VERCEL.md` for production fix
+
+### Filmed (Computer Use + Playwright)
+- **All Acts 0–7** on `temporary-rapid-hawthorn-7kywpoj.vercel.app` (real Supabase signup + sign-in)
+- Metrics confirmed: 91% GROUNDS / 18% baseline (+73 pts) · $0.0003/case · Workspace · solo
+- Artifacts: `grounds_judge_path_signup_signin_film.mp4` (~85s) + 5 screenshots
+- Script: `npm run demo:judge` / `scripts/render-judge-path-film.mjs`
+
+### Agent URL
+- https://cursor.com/agents/bc-96957f96-5371-428f-ab44-62a42cc513ba

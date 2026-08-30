@@ -30,9 +30,16 @@ Source: `out/metrics.json` · `out/EVAL_TABLE.md`
 
 ## Demo video
 
-- Cloud Computer Use film: `public/demo/grounds_product_film_acts_1_6.mp4` (~1:42)
+- **Judge-path film (signup→sign-in→results):** `grounds_judge_path_signup_signin_film.mp4` (~85s) — Computer Use + Playwright on temp Vercel deploy with real Supabase auth
+- Cloud film agent (judge path): https://cursor.com/agents/bc-96957f96-5371-428f-ab44-62a42cc513ba
+- Cloud product film (Acts 1–6, demo bypass): `public/demo/grounds_product_film_acts_1_6.mp4` (~1:42)
 - Local click-through: `demo/GROUNDS_DEMO.mp4`
-- **Rotate CURSOR_API_KEY** — pasted in chat 2026-08-30
+
+## Live deploy blocker (2026-08-30)
+
+- **`grounds-alpha.vercel.app` is broken** — missing `VITE_SUPABASE_*` at Vercel build → client throws on load
+- Fix: `docs/DEPLOY_VERCEL.md` — add Supabase env vars in Vercel, redeploy
+- Temporary working deploy used for judge film: `temporary-rapid-hawthorn-7kywpoj.vercel.app` (anonymous, expires)
 
 ## Still for submit
 
