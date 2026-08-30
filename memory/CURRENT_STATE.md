@@ -1,6 +1,6 @@
 # GROUNDS — CURRENT STATE
 
-> Updated: **2026-08-30** (AgentRouter live + metered eval)  
+> Updated: **2026-08-30** (final film + submission ready)  
 > Contest close: **Aug 31 18:00 UTC**
 
 ## Measured (AgentRouter `gpt-5.6-sol`, this machine)
@@ -17,25 +17,27 @@ Source: `out/metrics.json` · `out/EVAL_TABLE.md`
 ## LLM
 
 - Provider: **AgentRouter** (`AGENT_ROUTER_API_KEY` in gitignored `grounds/.env`)
-- Base: `https://agentrouter.org/v1` (aftercut pattern + WAF headers)
+- Base: `https://agentrouter.org/v1`
 - Model: `gpt-5.6-sol`
-- **Rotate the key** — it was pasted in chat
+- **Rotate keys** that were pasted in chat
+
+## Multi-tenant / product
+
+- Per-account workspace store (`src/lib/workspace-store.ts`) — new signups start **empty**
+- **New claim pack** creates tenant-private packs; runs/gate/eval scoped to that account
+- Optional **Import contest sample** copies gold packs into YOUR workspace only
+- Isolation: localStorage per auth user (not full server RLS)
+
+## Final demo video
+
+- File: `public/demo/grounds_product_film_acts_1_6.mp4` (= `grounds_multi_tenant_judge_full_demo.mp4`, ~26.8 MB, ~3:53)
+- Acts: home/product → fresh signup → new pack → results → all pages → second-account empty
+- Visible cursor; no demo bypass
+- Cloud agent: `bc-2edeaf68-54e2-47ca-9489-60bdb2810d6d`
 
 ## Submission (HackerEarth)
 
 - **Paste fields:** `submission/HACKEREARTH_FIELDS.md`
-- **Source zip:** `submission/grounds-micro1-source.zip` (**21.6 MB** &lt; 50 MB) — rebuild: `node scripts/pack-submission.mjs`
-- **Video URL (after deploy):** https://grounds-alpha.vercel.app/demo/grounds_product_film_acts_1_6.mp4
-- Cloud film agent FINISHED: https://cursor.com/agents/bc-297d00b1-fd27-4b5a-96b8-2c8ff5329bc6
-
-## Demo video
-
-- Cloud Computer Use film: `public/demo/grounds_product_film_acts_1_6.mp4` (~1:42)
-- Local click-through: `demo/GROUNDS_DEMO.mp4`
-- **Rotate CURSOR_API_KEY** — pasted in chat 2026-08-30
-
-## Still for submit
-
-- Paste fields + upload zip on HackerEarth before **Aug 31 18:00 UTC**
-- Confirm video URL returns 200 after Vercel deploy
-- Optional: `GROUNDS_INTERACTIVE_GATE=1` once to capture real human-min demo
+- **Video URL:** `https://grounds-alpha.vercel.app/demo/grounds_product_film_acts_1_6.mp4`
+- **Source zip:** `submission/grounds-micro1-source.zip` — `node scripts/pack-submission.mjs`
+- **Status:** artefacts ready — upload on HackerEarth before **2026-08-31 18:00 UTC**

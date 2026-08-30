@@ -25,9 +25,7 @@ const include = [
   "scripts",
   "memory",
   "demo/index.html",
-  "demo/GROUNDS_DEMO.mp4",
-  "demo/grounds_product_film_acts_1_6.mp4",
-  "public/demo/grounds_product_film_acts_1_6.mp4",
+  // Videos hosted via Video URL field (≤50MB zip limit) — see HACKEREARTH_FIELDS.md
   "REPRO.md",
   "IMPROVEMENT_CHANGELOG.md",
   "VIDEO_SCRIPT.md",

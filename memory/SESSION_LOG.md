@@ -1,5 +1,21 @@
 # GROUNDS — SESSION LOG
 
+## 2026-08-30 — Final film + submission pack
+
+### Intent
+Ship final ≤5 min judge video and prepare HackerEarth paste fields + source zip.
+
+### Done
+- Downloaded full Acts 0–5 Computer Use film (~3:53, 26.8 MB) → `public/demo/grounds_product_film_acts_1_6.mp4`
+- Story: visible cursor · fresh signup · empty workspace · New claim pack · every page · second-account isolation
+- Updated `submission/HACKEREARTH_FIELDS.md` + rebuild zip for upload
+- Live URL: https://grounds-alpha.vercel.app/demo/grounds_product_film_acts_1_6.mp4
+
+### Still open
+- Henry: paste Title / Description / Video URL + upload zip on HackerEarth → Submit
+
+---
+
 ## 2026-08-30 — Click-through product demo + multi-tenant decision
 
 ### Intent
