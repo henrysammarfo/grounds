@@ -76,7 +76,26 @@ export const trajectory: TrajectoryStep[] = liveTrajectory.map((t) => ({
   duration: t.duration,
 }));
 
-export const gateQueue = liveGateQueue.map((g) => ({
+export const gateQueue = (
+  liveGateQueue.length > 0
+    ? liveGateQueue
+    : [
+        {
+          id: "G-001",
+          case: "C-001",
+          action: "pip install requests (network egress)",
+          risk: "medium" as const,
+          requested: "2m ago",
+        },
+        {
+          id: "G-002",
+          case: "C-006",
+          action: "curl https://pypi.org/simple/ (network egress)",
+          risk: "high" as const,
+          requested: "5m ago",
+        },
+      ]
+).map((g) => ({
   id: g.id,
   case: g.case,
   action: g.action,
