@@ -1,6 +1,6 @@
 # GROUNDS — CURRENT STATE
 
-> Updated: **2026-08-30** (AgentRouter live + metered eval)  
+> Updated: **2026-08-30** (multi-tenant judge film + Vercel auth fix)  
 > Contest close: **Aug 31 18:00 UTC**
 
 ## Measured (AgentRouter `gpt-5.6-sol`, this machine)
@@ -30,8 +30,10 @@ Source: `out/metrics.json` · `out/EVAL_TABLE.md`
 
 ## Demo video
 
+- **Multi-tenant judge film (2026-08-30):** `grounds_multi_tenant_judge_film_fresh_signup.mp4` (~1:58, visible cursor) — fresh signup + empty workspace + new pack + tenant isolation (screenshots in agent artifacts)
 - Cloud Computer Use film: `public/demo/grounds_product_film_acts_1_6.mp4` (~1:42)
 - Local click-through: `demo/GROUNDS_DEMO.mp4`
+- **Vercel auth fix:** `src/config/supabase-public.ts` fallback when `VITE_SUPABASE_*` missing on external deploy
 - **Rotate CURSOR_API_KEY** — pasted in chat 2026-08-30
 
 ## Still for submit

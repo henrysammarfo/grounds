@@ -40,6 +40,8 @@
 | Cost + human-min fully metered in runners | **yes** | `grounds_lib/llm.py`, gate, eval | Live AgentRouter run 2026-08-30 |
 | AgentRouter OpenAI-compatible base `https://agentrouter.org/v1` | **yes** | aftercut `KEYS_SETUP.md` + `agent-router.ts` | Used |
 | Fresh eval baseline 0.1833 → GROUNDS 0.9083 | **yes** | `out/metrics.json` 2026-08-30 | Cost avg $0.000105 vs $0.000336 |
+| Multi-tenant: new signups start empty; packs isolated per account | **yes** | Computer Use film 2026-08-30; `workspace-store.ts`; live signup on grounds-alpha | Screenshots + video artifact |
+| grounds-alpha.vercel.app auth works without Lovable VITE_* on Vercel | **yes** (after fix) | Playwright probe post-deploy; `supabase-public.ts` fallback | Prefer copying Lovable secrets to Vercel long-term |
 | “North Korea can’t hack / zero bugs” | **rejected** | Security doctrine | Never claim; document residual risk |
 
 ---

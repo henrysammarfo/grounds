@@ -170,3 +170,19 @@ Create exactly 10 case directories with meta/claims/gold + synthetic `repo/` fix
 
 ### Next
 Baseline + agent + eval against these packs.
+
+---
+
+## 2026-08-30 — Multi-tenant judge film (Computer Use)
+
+### Done
+- **Blocker:** `grounds-alpha.vercel.app` `/auth` crashed — missing `VITE_SUPABASE_*` on Vercel build
+- **Fix:** `src/config/supabase-public.ts` publishable fallback → merged `main` → live auth restored
+- **Film:** Computer Use full click path (Acts 0–5) with fresh accounts; screenshots captured
+- **Video artifact:** `grounds_multi_tenant_judge_film_fresh_signup.mp4` (~1:58, visible cursor)
+- Accounts: `judge.20260830201012@grounds.app` (full path), `judge.20260830201500@grounds.app` (video sign-in pass)
+
+### Verified
+- New signups → empty workspace (no gold-pack-v1)
+- Created `payments-api honesty` U-001 per tenant
+- Second account cannot see first tenant's pack
