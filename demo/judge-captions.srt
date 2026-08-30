@@ -1,0 +1,63 @@
+1
+00:00:00,000 --> 00:00:04,000
+GROUNDS — verify claims against the real repo
+
+2
+00:00:11,540 --> 00:00:15,540
+Live metrics: baseline vs GROUNDS on identical gold packs
+
+3
+00:00:18,039 --> 00:00:22,039
+How it works: tools → verify → human gate → report
+
+4
+00:00:30,370 --> 00:00:34,370
+Create an account — what judges do first
+
+5
+00:00:41,115 --> 00:00:45,115
+Submit create account (or continue if you already have one)
+
+6
+00:00:48,435 --> 00:00:51,435
+Sign in with your GROUNDS account
+
+7
+00:00:55,225 --> 00:00:59,225
+Signed in — dashboard Overview with live eval KPIs
+
+8
+00:01:02,966 --> 00:01:06,966
+Claim packs: search, filter, open C-001
+
+9
+00:01:13,870 --> 00:01:18,870
+Results: baseline believed the README — GROUNDS grounded the claims
+
+10
+00:01:29,450 --> 00:01:33,450
+Trajectories: tool I/O judges can replay
+
+11
+00:01:40,173 --> 00:01:44,173
+Runs: start baseline or GROUNDS agent on the same pack
+
+12
+00:01:50,250 --> 00:01:54,250
+Human gate: approve or deny risky actions
+
+13
+00:02:01,587 --> 00:02:07,587
+Measured lift: ~0.18 → ~0.91 claim accuracy on 10 gold packs
+
+14
+00:02:17,625 --> 00:02:21,625
+Settings: solo workspace — multi-tenant not required for contest
+
+15
+00:02:26,489 --> 00:02:29,489
+Sign out — full loop complete
+
+16
+00:02:34,157 --> 00:02:39,157
+GROUNDS — documentation honesty as an agent workflow
