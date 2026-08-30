@@ -113,7 +113,7 @@ function RunsPage() {
                   <td className="t-meta px-6 py-4">{r.cases}</td>
                   <td className="t-item px-6 py-4">{Math.round(r.accuracy * 100)}%</td>
                   <td className="t-meta px-6 py-4">{r.duration}</td>
-                  <td className="t-meta px-6 py-4">${r.cost.toFixed(2)}</td>
+                  <td className="t-meta px-6 py-4">${r.cost < 0.01 ? r.cost.toFixed(4) : r.cost.toFixed(2)}</td>
                   <td className="t-meta px-6 py-4">{r.when}</td>
                 </tr>
               ))}

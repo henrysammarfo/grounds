@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GROUNDS — micro1 demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg0: #0c1210;
+      --bg1: #14201a;
+      --ink: #e8f0ea;
+      --muted: #9bb0a2;
+      --accent: #c8f55a;
+      --warn: #ff8a5b;
+      --ok: #6ee7a8;
+      --bad: #ff6b7a;
+      --panel: #1a2820;
+      --line: #2a3d32;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1920px; height: 1080px; overflow: hidden;
+      background: radial-gradient(1200px 700px at 15% 10%, #1c3328 0%, var(--bg0) 55%);
+      color: var(--ink);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+    }
+    .stage { width: 1920px; height: 1080px; position: relative; }
+    .slide {
+      position: absolute; inset: 0; display: none; padding: 72px 96px;
+      flex-direction: column; justify-content: space-between;
+    }
+    .slide.active { display: flex; }
+    .brand {
+      font-family: Syne, sans-serif; font-weight: 800; font-size: 28px;
+      letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase;
+    }
+    .eyebrow {
+      color: var(--muted); font-size: 22px; margin-bottom: 18px; letter-spacing: 0.04em;
+    }
+    h1 {
+      font-family: Syne, sans-serif; font-weight: 700; font-size: 68px;
+      line-height: 1.05; max-width: 1500px; margin-bottom: 28px;
+    }
+    .lede { font-size: 28px; color: var(--muted); max-width: 1400px; line-height: 1.45; }
+    .caption {
+      border-top: 1px solid var(--line); padding-top: 28px; margin-top: 40px;
+      font-size: 26px; color: var(--ink); max-width: 1600px; line-height: 1.4;
+    }
+    .caption strong { color: var(--accent); font-weight: 600; }
+    .grid2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: stretch; flex: 1; }
+    .panel {
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      border: 1px solid var(--line); border-radius: 18px; padding: 28px 32px;
+      overflow: hidden;
+    }
+    .panel h2 {
+      font-family: Syne, sans-serif; font-size: 28px; margin-bottom: 18px; color: var(--accent);
+    }
+    pre {
+      white-space: pre-wrap; word-break: break-word; font-size: 22px; line-height: 1.45;
+      color: #d7e6db;
+    }
+    .tag {
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
+      font-size: 18px; border: 1px solid var(--line); margin-right: 10px; margin-bottom: 10px;
+    }
+    .tag.bad { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 50%, var(--line)); }
+    .tag.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); }
+    .tag.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 50%, var(--line)); }
+    .claim {
+      display: flex; justify-content: space-between; gap: 24px; align-items: center;
+      padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 24px;
+    }
+    .claim:last-child { border-bottom: 0; }
+    .label {
+      font-weight: 600; min-width: 110px; text-align: right; text-transform: uppercase;
+    }
+    .label.true { color: var(--bad); }
+    .label.false { color: var(--ok); }
+    .label.gold { color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 26px; }
+    th, td { text-align: left; padding: 18px 14px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 600; }
+    td.num { font-variant-numeric: tabular-nums; }
+    .bigstat {
+      font-family: Syne, sans-serif; font-size: 96px; font-weight: 800; line-height: 1;
+      color: var(--accent);
+    }
+    .footer {
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 20px; margin-top: 24px;
+    }
+    .progress {
+      height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; margin-top: 18px;
+    }
+    .progress > i {
+      display: block; height: 100%; width: 0; background: var(--accent);
+      transition: width 0.2s linear;
+    }
+    .code-line { color: #9fd3ff; }
+    .code-fail { color: var(--bad); }
+    .code-hit { color: var(--warn); }
+    .center {
+      flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <!-- 1 Problem -->
+    <section class="slide active" data-ms="35000" data-say="AI READMEs sound true while tests fail. GROUNDS grounds each claim in the real repo.">
+      <div>
+        <div class="brand">GROUNDS</div>
+        <div class="eyebrow" style="margin-top:28px">micro1 Frontier Engineering · Case C-001</div>
+        <h1>README claims that are not true.</h1>
+        <p class="lede">Fixtures look trustworthy. Judges need tools + evidence, not fluent prose.</p>
+      </div>
+      <div class="grid2" style="margin-top:20px">
+        <div class="panel">
+          <h2>cases/C-001/repo/README.md</h2>
+          <pre># widget-cli
+
+Tiny greeting CLI used as a GROUNDS fixture.
+
+## Status
+
+- <span class="code-fail">**All unit tests pass**</span> (`python -m pytest -q`).
+- <span class="code-fail">**No secrets**</span> in this repository — credentials are never committed.
+
+## API
+
+greet("Ada")  # -> "Hello, Ada!"</pre>
+        </div>
+        <div class="panel">
+          <h2>Claims under test</h2>
+          <div class="claim"><span>All unit tests pass</span><span class="label gold">?</span></div>
+          <div class="claim"><span>No AWS / secrets in repo</span><span class="label gold">?</span></div>
+          <div class="claim"><span>greet(name) public API exists</span><span class="label gold">?</span></div>
+          <p style="margin-top:28px;color:var(--muted);font-size:22px;line-height:1.4">Gold labels exist for scoring. Baseline and agent never see them.</p>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><strong>0:00</strong> — AI READMEs sound true while tests fail. GROUNDS grounds each claim in the real repo.</p>
+        <div class="footer"><span>Demo deliverable · ≤5:00</span><span>Slide 1 / 6</span></div>
+        <div class="progress"><i style="width:16%"></i></div>
+      </div>
+    </section>
+
+    <!-- 2 Baseline -->
+    <section class="slide" data-ms="45000" data-say="Baseline: one-shot LLM, docs dump only, no tools. It believes the prose.">
+      <div>
+        <div class="brand">GROUNDS</div>
+        <div class="eyebrow" style="margin-top:28px">Baseline · one-shot LLM · no tools</div>
+        <h1>It believes the README.</h1>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h2>$ python baseline/run.py --case C-001 --mode llm</h2>
+          <pre><span class="code-line"># mode=llm · AgentRouter gpt-5.6-sol</span>
+# input: README + claims text only
+# tools: none
+
+Wrote out/baseline/C-001/predictions.json</pre>
+          <div style="margin-top:24px">
+            <span class="tag bad">no grep</span>
+            <span class="tag bad">no pytest</span>
+            <span class="tag bad">no sandbox</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>predictions.json</h2>
+          <div class="claim"><span>C-001-1 tests pass</span><span class="label true">true ✗</span></div>
+          <div class="claim"><span>C-001-2 no secrets</span><span class="label true">true ✗</span></div>
+          <div class="claim"><span>C-001-3 greet API</span><span class="label true">true ✓</span></div>
+          <p style="margin-top:28px;color:var(--muted);font-size:22px">Accuracy on this case vs gold: <strong style="color:var(--warn)">33%</strong></p>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><strong>0:35</strong> — Baseline: one-shot LLM, docs dump only, no tools. It believes the prose.</p>
+        <div class="footer"><span>Identical gold packs both sides</span><span>Slide 2 / 6</span></div>
+        <div class="progress"><i style="width:33%"></i></div>
+      </div>
+    </section>
+
+    <!-- 3 Agent tools -->
+    <section class="slide" data-ms="70000" data-say="Agent: list, read, grep, test in a sandbox, then a verify node that only sees evidence.">
+      <div>
+        <div class="brand">GROUNDS</div>
+        <div class="eyebrow" style="margin-top:28px">Agent · LangGraph · tools + verify</div>
+        <h1>Evidence before labels.</h1>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h2>$ python agent/run.py --case C-001</h2>
+          <pre><span class="code-line">plan</span> → gather tools → <span class="code-line">verify</span> → report
+
+<span class="code-hit">grep AKIA*</span> → config/sample.env:3
+  AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+
+<span class="code-fail">run_tests</span> → exit=1
+  assert 'Hello, Ada!' == 'Hi, Ada!'
+  FAILED tests/test_greet.py</pre>
+        </div>
+        <div class="panel">
+          <h2>trajectory.jsonl (tool I/O)</h2>
+          <pre style="font-size:20px">{
+  "node": "verify",
+  "labels": {
+    "C-001-1": "false",
+    "C-001-2": "false",
+    "C-001-3": "true"
+  },
+  "sources": ["list_files","grep","run_tests",…]
+}</pre>
+          <div style="margin-top:20px">
+            <span class="tag ok">sandbox</span>
+            <span class="tag ok">human gate before install</span>
+            <span class="tag ok">replayable JSONL</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><strong>1:20</strong> — Agent: list/read/grep/test in a sandbox, then a verify node that only sees evidence. Human gate before installs.</p>
+        <div class="footer"><span>Do not claim unhackable — residual risk remains</span><span>Slide 3 / 6</span></div>
+        <div class="progress"><i style="width:50%"></i></div>
+      </div>
+    </section>
+
+    <!-- 4 Measured -->
+    <section class="slide" data-ms="50000" data-say="Same ten gold packs both sides. Macro claim accuracy: baseline 0.1833, GROUNDS 0.9083.">
+      <div>
+        <div class="brand">GROUNDS</div>
+        <div class="eyebrow" style="margin-top:28px">Measured improvement · out/metrics.json</div>
+        <h1>Same packs. Different truth.</h1>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h2>Macro claim accuracy</h2>
+          <div style="display:flex;gap:48px;align-items:flex-end;margin:28px 0 12px">
+            <div>
+              <div style="color:var(--muted);font-size:22px;margin-bottom:10px">Baseline</div>
+              <div class="bigstat" style="color:var(--bad)">0.18</div>
+            </div>
+            <div style="font-size:48px;color:var(--muted);padding-bottom:18px">→</div>
+            <div>
+              <div style="color:var(--muted);font-size:22px;margin-bottom:10px">GROUNDS</div>
+              <div class="bigstat">0.91</div>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:22px;margin-top:18px">Exact: <strong style="color:var(--ink)">0.1833 → 0.9083</strong> · 10 cases · 2 hard</p>
+        </div>
+        <div class="panel">
+          <h2>Cost / case (avg)</h2>
+          <table>
+            <tr><th></th><th>Baseline</th><th>GROUNDS</th></tr>
+            <tr><td>USD</td><td class="num">$0.000105</td><td class="num">$0.000336</td></tr>
+            <tr><td>Human-min</td><td class="num">0.0</td><td class="num">0.0*</td></tr>
+            <tr><td>C-001 acc</td><td class="num">33%</td><td class="num">100%</td></tr>
+          </table>
+          <p style="margin-top:18px;color:var(--muted);font-size:18px">* Unattended gate deny. Interactive gate meters real wait minutes.</p>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><strong>3:10</strong> — Same ten gold packs both sides. Macro claim accuracy: baseline <strong>0.1833</strong>, GROUNDS <strong>0.9083</strong>.</p>
+        <div class="footer"><span>Fair eval · identical inputs</span><span>Slide 4 / 6</span></div>
+        <div class="progress"><i style="width:66%"></i></div>
+      </div>
+    </section>
+
+    <!-- 5 Changelog -->
+    <section class="slide" data-ms="45000" data-say="Best change: evidence-only verify. Removed experiment: critique rewrite — cost up, signal flat.">
+      <div>
+        <div class="brand">GROUNDS</div>
+        <div class="eyebrow" style="margin-top:28px">IMPROVEMENT_CHANGELOG.md</div>
+        <h1>Ship the verify node.<br>Kill the vanity loop.</h1>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h2>Kept — evidence-only verify</h2>
+          <pre>Tools gather artefacts.
+Verify LLM sees evidence only.
+Heuristic merge prefers non-partial.
+
+Result: labels track pytest + grep,
+not README tone.</pre>
+        </div>
+        <div class="panel">
+          <h2>Removed — self-critique rewrite</h2>
+          <pre>~1.9× token cost
+&lt;1pt accuracy move (noise)
+
+Lesson: spend tokens on
+<strong style="color:var(--accent)">evidence collection</strong>,
+not second-guessing without
+new tools.</pre>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><strong>4:00</strong> — Best change: evidence-only verify. Removed experiment: critique rewrite — cost up, signal flat.</p>
+        <div class="footer"><span>Failure mode: over-trusting fluent docs</span><span>Slide 5 / 6</span></div>
+        <div class="progress"><i style="width:83%"></i></div>
+      </div>
+    </section>
+
+    <!-- 6 Close -->
+    <section class="slide" data-ms="20000" data-say="Documentation honesty as an agent workflow — trajectories judges can replay.">
+      <div class="center">
+        <div class="brand" style="font-size:36px;margin-bottom:28px">GROUNDS</div>
+        <h1 style="font-size:78px;max-width:1600px">Documentation honesty<br>as an agent workflow.</h1>
+        <p class="lede" style="margin-top:12px">Trajectories judges can replay. Residual risk acknowledged — never “unhackable.”</p>
+        <div style="margin-top:48px;display:flex;gap:18px;flex-wrap:wrap">
+          <span class="tag ok">REPRO.md</span>
+          <span class="tag ok">JSONL trajectories</span>
+          <span class="tag ok">baseline vs agent</span>
+          <span class="tag ok">≤5 min demo</span>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><strong>4:45</strong> — Documentation honesty as an agent workflow — trajectories judges can replay.</p>
+        <div class="footer"><span>micro1 · Aug 31 18:00 UTC close</span><span>Slide 6 / 6</span></div>
+        <div class="progress"><i style="width:100%"></i></div>
+      </div>
+    </section>
+  </div>
+  <script>
+    window.__GROUNDS_DEMO__ = {
+      slides: [...document.querySelectorAll(".slide")].map((el, i) => ({
+        index: i,
+        ms: Number(el.dataset.ms || 10000),
+        say: el.dataset.say || "",
+      })),
+      totalMs: [...document.querySelectorAll(".slide")].reduce((a, el) => a + Number(el.dataset.ms || 0), 0),
+    };
+    window.showSlide = (i) => {
+      document.querySelectorAll(".slide").forEach((el, idx) => {
+        el.classList.toggle("active", idx === i);
+      });
+    };
+  </script>
+</body>
+</html>

@@ -48,13 +48,13 @@ python eval/score.py
 
 Writes `out/metrics.json`, `out/eval_table.json`, `out/EVAL_TABLE.md`.
 
-## Latest measured result (this machine, 2026-08-29)
+## Latest measured result (this machine, 2026-08-30 · AgentRouter `gpt-5.6-sol`)
 
-| | Claim accuracy (macro) |
-|---|---:|
-| Baseline (LLM one-shot) | **0.4083** |
-| GROUNDS agent | **0.8250** |
-| Cases | 10 (2 hard/adversarial) |
+| | Claim accuracy (macro) | Cost USD / case (avg) | Human min / case |
+|---|---:|---:|---:|
+| Baseline (LLM one-shot) | **0.1833** | $0.000105 | 0.0 |
+| GROUNDS agent | **0.9083** | $0.000336 | 0.0 (unattended deny) |
+| Cases | 10 (2 hard/adversarial) | | |
 
 Per-case table: `out/EVAL_TABLE.md`.
 

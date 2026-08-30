@@ -128,26 +128,26 @@ function SettingsPage() {
         <section className="panel p-6">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-accent" strokeWidth={2} />
-            <p className="t-item">Reviewers</p>
+            <p className="t-item">Access</p>
           </div>
+          <p className="t-meta mt-3">
+            Contest / solo mode: one operator, one workspace. Shared orgs and seat-based
+            multi-tenant review are not required for micro1 and are not shipped yet.
+          </p>
           <ul className="mt-4 space-y-3">
-            {[
-              ["Ada L.", "Owner"],
-              ["Kai M.", "Reviewer"],
-              ["Sam O.", "Reviewer"],
-            ].map(([name, role]) => (
-              <li key={name} className="flex items-center justify-between">
-                <span className="t-item">{name}</span>
-                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">{role}</span>
-              </li>
-            ))}
+            <li className="flex items-center justify-between">
+              <span className="t-item">You (operator)</span>
+              <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Owner</span>
+            </li>
           </ul>
           <button
             type="button"
             className="btn-outline-ink mt-5 hover:bg-secondary"
-            onClick={() => toast.success("Invite sent")}
+            onClick={() =>
+              toast.message("Team invites / multi-tenant workspaces — post-contest roadmap")
+            }
           >
-            Invite reviewer
+            Invite later
           </button>
         </section>
       </div>

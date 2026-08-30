@@ -1,5 +1,53 @@
 # GROUNDS — SESSION LOG
 
+## 2026-08-30 — Click-through product demo + multi-tenant decision
+
+### Intent
+User wanted real feature clicks (not scroll tour) and clarity on multi-tenant.
+
+### Done
+- Seeded demo human-gate queue when eval has none; Approve/Deny recorded in UI
+- Settings Access: solo workspace copy; removed fake reviewer seats
+- Workspace label → `solo`
+- Re-recorded `demo/GROUNDS_DEMO.mp4` (~114s) with Playwright clicks: search/filter, export, start run, gate, settings toggles
+- **Decision:** multi-tenant not needed for contest submit
+
+---
+
+## 2026-08-30 — Contest demo video (product, not slides)
+
+### Intent
+User rejected slide-deck demo; want **product** walkthrough of the live app.
+
+### Done
+- Fixed homepage metrics to live eval (removed stale 41% / 3.8 human-min mocks)
+- `VITE_GROUNDS_DEMO=1` local-only dashboard auth bypass (DEV only)
+- Recorded `demo/GROUNDS_DEMO.mp4` via Playwright against `npm run dev` (~186s): home → product → dashboard → cases/C-001 → trajectories → evaluation → gate → runs → docs → changelog
+- Script: `scripts/render-product-demo.mjs` (`npm run demo:product`)
+
+### Still open
+- HackerEarth submission upload
+- Optional interactive human-gate demo minutes
+
+---
+
+## 2026-08-30 — Contest demo video
+
+### Intent
+Produce ≤5 min micro1 demo (`VIDEO_SCRIPT.md`).
+
+### Done
+- Re-ran live `baseline/run.py --case C-001 --mode llm` + `agent/run.py --case C-001` (AgentRouter)
+- Built `demo/index.html` beat sheet with measured metrics **0.1833 → 0.9083**
+- Rendered slide MP4 (superseded by product walkthrough)
+- Script: `scripts/render-demo-video.mjs`
+
+### Still open
+- HackerEarth submission upload
+- Optional interactive human-gate demo minutes
+
+---
+
 ## 2026-08-29 — Discovery + live research (no agent code yet)
 
 ### Intent

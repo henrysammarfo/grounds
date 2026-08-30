@@ -16,7 +16,9 @@
     "contest:agent": "python agent/run.py --all",
     "contest:score": "python eval/score.py",
     "contest:all": "python baseline/run.py --all --mode llm && python agent/run.py --all && python eval/score.py && node scripts/sync-eval-to-ui.mjs",
-    "test:py": "python -m pytest -q"
+    "test:py": "python -m pytest -q",
+    "demo:video": "node scripts/render-demo-video.mjs",
+    "demo:product": "node scripts/render-product-demo.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -91,6 +93,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "nitro": "3.0.260603-beta",
+    "playwright": "^1.62.1",
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",

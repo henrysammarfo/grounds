@@ -1,28 +1,31 @@
-# VIDEO_SCRIPT.md — GROUNDS ≤5 minutes
+# VIDEO_SCRIPT.md — GROUNDS ≤5 minutes (click-through PRODUCT demo)
 
-Target: micro1 deliverable. One continuous capture preferred; captions OK.
+Target: micro1 deliverable. **Use the product** — clicks, filters, start run, gate decisions — not slides and not passive scroll.
 
-## Beat sheet (≈4:30)
+## Deliverable
 
-| # | Time | On screen | Say |
-|---|---|---|---|
-| 1 | 0:00–0:35 | README of `cases/C-001/repo` claiming tests pass / no secrets | “AI READMEs sound true while tests fail. GROUNDS grounds each claim in the real repo.” |
-| 2 | 0:35–1:20 | `python baseline/run.py --case C-001 --mode llm` + predictions.json showing `true` on failing claims | “Baseline: one-shot LLM, docs dump only, no tools. It believes the prose.” |
-| 3 | 1:20–3:10 | `python agent/run.py --case C-001` + scroll `trajectory.jsonl` (grep AKIA, pytest fail, verify) | “Agent: list/read/grep/test in a sandbox, then a verify node that only sees evidence. Human gate before installs.” |
-| 4 | 3:10–4:00 | `out/EVAL_TABLE.md` + `out/metrics.json` (0.41 → 0.83) | “Same ten gold packs both sides. Macro claim accuracy: baseline 0.41, GROUNDS 0.83.” |
-| 5 | 4:00–4:45 | `IMPROVEMENT_CHANGELOG.md` — highlight verify node + **removed** self-critique loop | “Best change: evidence-only verify. Removed experiment: critique rewrite — cost up, signal flat.” |
-| 6 | 4:45–5:00 | Logo / one-liner | “Documentation honesty as an agent workflow — trajectories judges can replay.” |
+- **File:** `demo/GROUNDS_DEMO.mp4` (~1:54 click-through)
+- **Re-render:** `VITE_GROUNDS_DEMO=1 npm run dev -- --port 8080` then `npm run demo:product`
+
+## What the recording does
+
+1. Home → Product (“See how it works”)
+2. Dashboard overview (live metrics)
+3. Claim packs: search `widget`, filter Mismatch → All, open C-001, Export
+4. Trajectories scroll
+5. Runs: toggle baseline/agent, Start run
+6. Human gate: Approve + Deny pending actions
+7. Evaluation table
+8. Settings: policy toggle, Invite later (solo — not multi-tenant), key hygiene
+9. Docs / changelog close
+
+## Multi-tenant?
+
+**Not for micro1.** Solo workspace is enough. Fake team-invite chrome removed; Settings says multi-tenant is post-contest.
 
 ## Must show
 
-- Tool I/O in trajectory (not just final labels)
-- Fair baseline vs agent on identical cases
-- One removed experiment
-- Do **not** claim unhackable
-
-## Record checklist
-
-- [ ] Clean terminal font, 1080p+
-- [ ] No API keys visible
-- [ ] File paths match repo
-- [ ] Under 5:00 hard cap
+- Real clicks changing UI state (filters, toasts, gate queue shrinking)
+- Live eval numbers
+- No unhackable claims
+- Under 5:00

@@ -33,8 +33,9 @@
 | CLAIM | VERIFIED | SOURCES | ACTION |
 |---|---|---|---|
 | AI-written prose can look correct while runtime/tests disagree | **yes** (directionally) | New Relic State of AI Coding 2026 (Tavily); DAPLab README-for-agents article; Help Net Security ReadSecBench (agents follow README instructions) | Good wow narrative; cite sources, don’t invent percentages in video |
-| Dashboard metrics baseline 0.61 / GROUNDS 0.92 | **no** (retired) | Was mock in `grounds-data.ts` | **Replaced** by real eval 0.4083 → 0.8250 in `out/metrics.json` (2026-08-29) |
+| Dashboard metrics baseline 0.61 / GROUNDS 0.92 | **no** (retired) | Was mock in `grounds-data.ts` | **Replaced** by live AgentRouter eval **0.1833 → 0.9083** in `out/metrics.json` (2026-08-30) |
 | GROUNDS beats one-shot baseline on 10 gold packs | **yes** | `out/metrics.json` + `out/EVAL_TABLE.md` after `baseline/run.py --all --mode llm` + `agent/run.py --all` + `eval/score.py` | Keep regenerating before submit |
+| ≤5 min demo video exists | **yes** | `demo/GROUNDS_DEMO.mp4` (~285s) + `VIDEO_SCRIPT.md` | Upload with HackerEarth package |
 | gpt-4o-mini price $0.15/1M in · $0.60/1M out | **partial** | Tavily answer 2026-08-30 | Used as default in `grounds_lib/llm.py`; override via env; re-check openai.com/api/pricing before submit |
 | Cost + human-min fully metered in runners | **yes** | `grounds_lib/llm.py`, gate, eval | Live AgentRouter run 2026-08-30 |
 | AgentRouter OpenAI-compatible base `https://agentrouter.org/v1` | **yes** | aftercut `KEYS_SETUP.md` + `agent-router.ts` | Used |

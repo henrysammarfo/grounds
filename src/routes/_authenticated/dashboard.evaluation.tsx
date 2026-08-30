@@ -29,9 +29,9 @@ function EvaluationPage() {
     {
       icon: DollarSign,
       label: "Cost / case",
-      baseline: `$${metrics.costPerCase.baseline.toFixed(2)}`,
-      grounds: `$${metrics.costPerCase.grounds.toFixed(2)}`,
-      delta: `+$${(metrics.costPerCase.grounds - metrics.costPerCase.baseline).toFixed(2)}`,
+      baseline: `$${metrics.costPerCase.baseline.toFixed(4)}`,
+      grounds: `$${metrics.costPerCase.grounds.toFixed(4)}`,
+      delta: `+$${(metrics.costPerCase.grounds - metrics.costPerCase.baseline).toFixed(4)}`,
       good: false,
     },
   ];

@@ -62,6 +62,10 @@ function DashboardLayout() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (import.meta.env.DEV && import.meta.env.VITE_GROUNDS_DEMO === "1") {
+      setEmail("demo@grounds.local");
+      return;
+    }
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
   }, []);
 
@@ -134,7 +138,7 @@ function DashboardLayout() {
 
       <div className="flex-1">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-6">
-          <p className="t-item">Workspace · acme engineering</p>
+          <p className="t-item">Workspace · solo</p>
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
             <span className="t-meta hidden sm:block">{email}</span>

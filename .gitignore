@@ -10,6 +10,14 @@ memory/_raw_*
 out/
 *.egg-info/
 
+# Demo render scratch (keep demo/GROUNDS_DEMO.mp4 + demo/index.html)
+demo/_frames/
+demo/_record/
+demo/_product_frames/
+
+# Submission pack scratch
+submission/_staging/
+
 # Python
 __pycache__/
 *.py[cod]

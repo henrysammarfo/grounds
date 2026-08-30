@@ -5,7 +5,8 @@ Contest deliverable: baseline → iterations → final, with evidence and one re
 ## 0.5.0 — 2026-08-29 — Verify node + evidence merge
 
 - Split labeling into explicit **verify** path: tools gather evidence, then evidence-only LLM label with heuristic merge (prefer non-`partial`).
-- Macro claim accuracy on gold-pack v1: baseline **0.41** → GROUNDS **0.83** (`out/metrics.json`).
+- Macro claim accuracy on gold-pack v1 (AgentRouter live, 2026-08-30): baseline **0.1833** → GROUNDS **0.9083** (`out/metrics.json`).
+- Earlier local pass logged 0.41 → 0.83; treat **0.1833 → 0.9083** as the submission number.
 - Trajectories record tool I/O, finding memory IDs, and human-gate decisions.
 
 ## 0.4.2 — 2026-08-29 — Human gate before network/install

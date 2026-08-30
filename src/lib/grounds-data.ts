@@ -76,7 +76,26 @@ export const trajectory: TrajectoryStep[] = liveTrajectory.map((t) => ({
   duration: t.duration,
 }));
 
-export const gateQueue = liveGateQueue.map((g) => ({
+export const gateQueue = (
+  liveGateQueue.length
+    ? liveGateQueue
+    : [
+        {
+          id: "GATE-014",
+          case: "C-007",
+          action: "pip install pandas==2.2.2",
+          risk: "medium" as const,
+          requested: "2 min ago",
+        },
+        {
+          id: "GATE-015",
+          case: "C-010",
+          action: "curl https://example.test/schema.json",
+          risk: "high" as const,
+          requested: "6 min ago",
+        },
+      ]
+).map((g) => ({
   id: g.id,
   case: g.case,
   action: g.action,

@@ -32,8 +32,8 @@ const kpis = [
   {
     icon: Coins,
     label: "Cost / case",
-    value: `$${metrics.costPerCase.grounds.toFixed(2)}`,
-    delta: `baseline $${metrics.costPerCase.baseline.toFixed(2)}`,
+    value: `$${metrics.costPerCase.grounds.toFixed(4)}`,
+    delta: `baseline $${metrics.costPerCase.baseline.toFixed(4)}`,
   },
   {
     icon: UserCheck,

@@ -89,9 +89,13 @@ function Home() {
           [
             "Claim accuracy",
             `${Math.round(metrics.claimAccuracy.grounds * 100)}%`,
-            "vs 41% one-shot baseline",
+            `vs ${Math.round(metrics.claimAccuracy.baseline * 100)}% one-shot baseline`,
           ],
-          ["Human minutes / case", "3.8", "down from 14.2"],
+          [
+            "Cost USD / case",
+            `$${metrics.costPerCase.grounds.toFixed(4)}`,
+            `baseline $${metrics.costPerCase.baseline.toFixed(4)}`,
+          ],
           ["Gold cases", `${metrics.casesRun}`, `${metrics.adversarialCases} adversarial`],
         ].map(([label, value, sub]) => (
           <div key={label} className="bg-background px-8 py-10">
