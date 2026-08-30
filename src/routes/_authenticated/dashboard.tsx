@@ -20,6 +20,7 @@ import {
 
 } from "lucide-react";
 import { GroundsWordmark } from "@/components/brand/Logo";
+import { demoUser, isDemoAuth } from "@/lib/demo-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -62,6 +63,10 @@ function DashboardLayout() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (isDemoAuth) {
+      setEmail(demoUser.email);
+      return;
+    }
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
   }, []);
 
@@ -70,6 +75,10 @@ function DashboardLayout() {
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
+    if (isDemoAuth) {
+      navigate({ to: "/", replace: true });
+      return;
+    }
     clearRememberMe();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
@@ -134,7 +143,7 @@ function DashboardLayout() {
 
       <div className="flex-1">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-6">
-          <p className="t-item">Workspace · acme engineering</p>
+          <p className="t-item">Workspace · {isDemoAuth ? "solo" : "acme engineering"}</p>
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
             <span className="t-meta hidden sm:block">{email}</span>

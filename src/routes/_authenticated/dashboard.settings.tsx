@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Settings2, KeyRound, Users, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { isDemoAuth } from "@/lib/demo-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard/settings")({
@@ -128,27 +129,48 @@ function SettingsPage() {
         <section className="panel p-6">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-accent" strokeWidth={2} />
-            <p className="t-item">Reviewers</p>
+            <p className="t-item">Access</p>
           </div>
-          <ul className="mt-4 space-y-3">
-            {[
-              ["Ada L.", "Owner"],
-              ["Kai M.", "Reviewer"],
-              ["Sam O.", "Reviewer"],
-            ].map(([name, role]) => (
-              <li key={name} className="flex items-center justify-between">
-                <span className="t-item">{name}</span>
-                <span className="t-caption rounded-full bg-secondary px-2.5 py-1">{role}</span>
-              </li>
-            ))}
-          </ul>
-          <button
-            type="button"
-            className="btn-outline-ink mt-5 hover:bg-secondary"
-            onClick={() => toast.success("Invite sent")}
-          >
-            Invite reviewer
-          </button>
+          {isDemoAuth ? (
+            <>
+              <p className="t-meta mt-3">Solo operator workspace — multi-tenant invites not shipped.</p>
+              <ul className="mt-4 space-y-3">
+                <li className="flex items-center justify-between">
+                  <span className="t-item">Solo operator</span>
+                  <span className="t-caption rounded-full bg-secondary px-2.5 py-1">Owner</span>
+                </li>
+              </ul>
+              <button
+                type="button"
+                className="btn-outline-ink mt-5 hover:bg-secondary"
+                onClick={() => toast.message("Team invites ship after multi-tenant auth")}
+              >
+                Invite later
+              </button>
+            </>
+          ) : (
+            <>
+              <ul className="mt-4 space-y-3">
+                {[
+                  ["Ada L.", "Owner"],
+                  ["Kai M.", "Reviewer"],
+                  ["Sam O.", "Reviewer"],
+                ].map(([name, role]) => (
+                  <li key={name} className="flex items-center justify-between">
+                    <span className="t-item">{name}</span>
+                    <span className="t-caption rounded-full bg-secondary px-2.5 py-1">{role}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                className="btn-outline-ink mt-5 hover:bg-secondary"
+                onClick={() => toast.success("Invite sent")}
+              >
+                Invite reviewer
+              </button>
+            </>
+          )}
         </section>
       </div>
 
