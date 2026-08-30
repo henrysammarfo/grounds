@@ -1,0 +1,9 @@
+{
+  "id": "C-002",
+  "title": "PR claims pinned version and coverage",
+  "repo": "rate-limiter",
+  "source": "PR",
+  "hard": false,
+  "test_cmd": "python -m pytest -q",
+  "notes": "PR body overstates package version and test coverage."
+}

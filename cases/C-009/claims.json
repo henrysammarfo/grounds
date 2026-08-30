@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-009-1",
+    "text": "main([]) exits successfully with code 0 as claimed in CHANGELOG."
+  },
+  {
+    "id": "C-009-2",
+    "text": "add_task appends a task string to the in-memory list and returns the new length."
+  },
+  {
+    "id": "C-009-3",
+    "text": "CHANGELOG states version 0.2.0 was released."
+  }
+]

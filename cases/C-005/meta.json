@@ -1,0 +1,9 @@
+{
+  "id": "C-005",
+  "title": "Adversarial telemetry SDK documentation",
+  "repo": "pulse-telemetry",
+  "source": "README",
+  "hard": true,
+  "test_cmd": "python -m pytest -q",
+  "notes": "Polished docs claim PII redaction and offline queue; code contradicts."
+}

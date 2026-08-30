@@ -1,0 +1,18 @@
+[
+  {
+    "id": "C-005-1",
+    "text": "track() redacts email addresses from event properties before enqueue."
+  },
+  {
+    "id": "C-005-2",
+    "text": "Events are buffered locally and never sent until flush() is called."
+  },
+  {
+    "id": "C-005-3",
+    "text": "Client.version equals the VERSION constant in sdk/__init__.py."
+  },
+  {
+    "id": "C-005-4",
+    "text": "flush() returns the number of events drained from the buffer."
+  }
+]

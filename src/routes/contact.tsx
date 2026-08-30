@@ -37,8 +37,25 @@ function ContactPage() {
           className="panel space-y-5 p-8"
           onSubmit={(e) => {
             e.preventDefault();
-            setSent(true);
-            toast.success("Message queued — we reply with a trajectory.");
+            const fd = new FormData(e.currentTarget);
+            const payload = {
+              name: String(fd.get("name") || ""),
+              email: String(fd.get("email") || ""),
+              repo: String(fd.get("repo") || ""),
+              claim: String(fd.get("claim") || ""),
+              at: new Date().toISOString(),
+            };
+            try {
+              const key = "grounds.contact.inbox";
+              const prev = JSON.parse(localStorage.getItem(key) || "[]") as unknown[];
+              prev.unshift(payload);
+              localStorage.setItem(key, JSON.stringify(prev.slice(0, 50)));
+              setSent(true);
+              toast.success("Saved locally — wire SMTP/Supabase when ready to email.");
+              e.currentTarget.reset();
+            } catch {
+              toast.error("Could not save locally. Check browser storage permissions.");
+            }
           }}
         >
           {[
@@ -52,6 +69,7 @@ function ContactPage() {
               </label>
               <input
                 id={f.id}
+                name={f.id}
                 type={f.type}
                 required
                 placeholder={f.ph}
@@ -65,6 +83,7 @@ function ContactPage() {
             </label>
             <textarea
               id="claim"
+              name="claim"
               rows={4}
               required
               placeholder="“All migrations are reversible and tested.”"
@@ -73,7 +92,7 @@ function ContactPage() {
           </div>
           <button type="submit" className="btn-ink w-full hover:opacity-90">
             <Send className="h-4 w-4" strokeWidth={2.2} />
-            {sent ? "Sent" : "Send claim"}
+            {sent ? "Saved" : "Send claim"}
           </button>
         </form>
 

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-001-1",
+    "text": "All unit tests pass when running pytest."
+  },
+  {
+    "id": "C-001-2",
+    "text": "The repository contains no AWS access-key material or other secrets."
+  },
+  {
+    "id": "C-001-3",
+    "text": "The public API exposes a greet(name) helper that returns a greeting string."
+  }
+]

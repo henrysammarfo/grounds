@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-002-1",
+    "label": "false",
+    "rationale": "pyproject.toml / __init__.py version is 1.4.2, not 2.1.0."
+  },
+  {
+    "id": "C-002-2",
+    "label": "true",
+    "rationale": "allow() increments and returns True while count <= limit; pytest passes for under-limit."
+  },
+  {
+    "id": "C-002-3",
+    "label": "false",
+    "rationale": "tests only check under-limit success; no burst/over-limit assertion exists."
+  }
+]

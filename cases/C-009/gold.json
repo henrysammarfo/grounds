@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-009-1",
+    "label": "false",
+    "rationale": "main([]) raises SystemExit(2); test_main_empty_argv_exits_nonzero passes."
+  },
+  {
+    "id": "C-009-2",
+    "label": "true",
+    "rationale": "add_task appends and returns len(tasks); unit test passes."
+  },
+  {
+    "id": "C-009-3",
+    "label": "true",
+    "rationale": "CHANGELOG.md contains a 0.2.0 section heading."
+  }
+]

@@ -121,7 +121,7 @@ function DashboardLayout() {
             open ? "block" : "hidden lg:block",
           )}
         >
-          <p className="t-item text-on-dark">gold-pack-v3</p>
+          <p className="t-item text-on-dark">gold-pack-v1</p>
           <p className="t-caption mt-1 text-on-dark/55">10 cases · 2 adversarial</p>
           <Link
             to="/dashboard/runs"

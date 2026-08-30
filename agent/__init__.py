@@ -1,0 +1,1 @@
+# Contest package namespace markers

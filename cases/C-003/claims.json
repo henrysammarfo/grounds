@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-003-1",
+    "text": "Every migration implements a working down() rollback."
+  },
+  {
+    "id": "C-003-2",
+    "text": "Migration 002_add_orders creates an orders table in up()."
+  },
+  {
+    "id": "C-003-3",
+    "text": "The agent summary correctly states that 001_init is fully reversible."
+  }
+]

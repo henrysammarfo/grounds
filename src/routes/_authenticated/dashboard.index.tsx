@@ -49,7 +49,7 @@ function Overview() {
       <div>
         <h1 className="t-display-sm">Overview</h1>
         <p className="t-meta mt-2">
-          gold-pack-v3 · last run today at 10:30 a.m. · sandbox strict
+          gold-pack-v1 · synced from out/metrics.json · sandbox strict
         </p>
       </div>
 

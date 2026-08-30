@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-001-1",
+    "label": "false",
+    "rationale": "tests/test_greet.py asserts wrong return value; python -m pytest -q fails."
+  },
+  {
+    "id": "C-001-2",
+    "label": "false",
+    "rationale": "config/sample.env contains AKIAIOSFODNN7EXAMPLE (fake fixture AWS-style key)."
+  },
+  {
+    "id": "C-001-3",
+    "label": "true",
+    "rationale": "widget_cli/greet.py defines greet(name) returning an f-string greeting."
+  }
+]

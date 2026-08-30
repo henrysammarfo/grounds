@@ -1,0 +1,9 @@
+{
+  "id": "C-001",
+  "title": "README green CI and no secrets",
+  "repo": "widget-cli",
+  "source": "README",
+  "hard": false,
+  "test_cmd": "python -m pytest -q",
+  "notes": "Failing pytest + fake AKIA-looking fixture contradict README."
+}

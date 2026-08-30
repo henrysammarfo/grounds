@@ -37,7 +37,8 @@ function CasesPage() {
         <div>
           <h1 className="t-display-sm">Claim packs</h1>
           <p className="t-meta mt-2">
-            {cases.length} cases in gold-pack-v3 · 2 adversarial · gold labels frozen
+            {cases.length} cases in gold-pack-v1 · {cases.filter((c) => c.hard).length}{" "}
+            adversarial · synced from out/
           </p>
         </div>
         <button type="button" className="btn-ink hover:opacity-90">

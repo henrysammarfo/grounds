@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-007-1",
+    "label": "false",
+    "rationale": "requirements.txt has requests==2.28.1, not 2.32.3."
+  },
+  {
+    "id": "C-007-2",
+    "label": "false",
+    "rationale": "runtime.txt says python-3.11.9; README claim of 3.12+ is wrong."
+  },
+  {
+    "id": "C-007-3",
+    "label": "true",
+    "rationale": "csv_tools.py parse_row uses str.split(',') and returns the list."
+  }
+]

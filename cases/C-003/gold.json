@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-003-1",
+    "label": "false",
+    "rationale": "002_add_orders.py and 003_add_index.py raise NotImplementedError in down()."
+  },
+  {
+    "id": "C-003-2",
+    "label": "true",
+    "rationale": "002_add_orders.up() executes CREATE TABLE orders (...)."
+  },
+  {
+    "id": "C-003-3",
+    "label": "true",
+    "rationale": "001_init.py defines both up() and down(); down() drops users table."
+  }
+]

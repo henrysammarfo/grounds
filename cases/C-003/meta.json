@@ -1,0 +1,9 @@
+{
+  "id": "C-003",
+  "title": "Agent summary of reversible migrations",
+  "repo": "shop-migrate",
+  "source": "Agent summary",
+  "hard": false,
+  "test_cmd": null,
+  "notes": "Verifiable via file content/grep only — migration down() stubs."
+}

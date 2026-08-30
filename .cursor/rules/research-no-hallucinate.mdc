@@ -1,0 +1,38 @@
+---
+description: No hallucinations — fact-check with Tavily + TinyFish; persist to memory/
+alwaysApply: true
+---
+
+# Research + memory (GROUNDS)
+
+## Before claiming facts
+
+- Never invent deadlines, prizes, rubric weights, APIs, registration counts, or winners.
+- Fact-check live: **Tavily** then **TinyFish** (`X-API-Key`) then official URL/PDF.
+- Keys live in `.env` / user env — **never commit**. If a key appears in chat, warn to rotate.
+- If tools fail → say **unverified**. Do not fill gaps.
+
+## Persist same turn
+
+When something material changes, update:
+
+- `memory/CURRENT_STATE.md`
+- `memory/SESSION_LOG.md` (append dated entry)
+- `memory/FACT_CHECK.md` (CLAIM / VERIFIED / SOURCES / ACTION)
+
+Raw dumps go under `memory/_raw_*` (gitignored).
+
+## Output format
+
+```
+CLAIM: …
+VERIFIED: yes/no/partial
+SOURCES: url · tool · date
+ACTION: update which MD / what code change
+```
+
+## Banned
+
+- “As of my training data” for live contest facts  
+- Submitting mock `grounds-data.ts` numbers as eval evidence  
+- Claiming unhackable security

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-008-1",
+    "label": "false",
+    "rationale": "LICENSE file is Apache-2.0; README incorrectly says MIT."
+  },
+  {
+    "id": "C-008-2",
+    "label": "true",
+    "rationale": "src/flagkit/__init__.py imports and lists is_enabled in __all__."
+  },
+  {
+    "id": "C-008-3",
+    "label": "true",
+    "rationale": "is_enabled returns FLAGS.get(key, False)."
+  }
+]

@@ -1,3 +1,12 @@
+import {
+  liveAccuracyByCase,
+  liveCases,
+  liveGateQueue,
+  liveMetrics,
+  liveRuns,
+  liveTrajectory,
+} from "@/lib/eval-live.generated";
+
 export type ClaimLabel = "true" | "false" | "partial";
 export type CaseStatus = "verified" | "mismatch" | "needs-human" | "queued";
 
@@ -24,364 +33,95 @@ export type CaseRecord = {
   updated: string;
 };
 
-export const cases: CaseRecord[] = [
-  {
-    id: "C-001",
-    slug: "ledger-core-readme",
-    repo: "acme/ledger-core",
-    title: "All tests pass and no secrets are committed",
-    source: "README",
-    status: "mismatch",
-    hard: false,
-    humanMinutes: 3,
-    costUsd: 0.14,
-    updated: "Today at 10:30 a.m.",
-    claims: [
-      {
-        id: "CL-1",
-        text: "The full test suite passes on a clean checkout.",
-        gold: "false",
-        baseline: "true",
-        grounds: "false",
-        evidence: "pytest -q → 2 failed in tests/test_settlement.py::test_rounding",
-      },
-      {
-        id: "CL-2",
-        text: "No credentials are stored in the repository.",
-        gold: "partial",
-        baseline: "true",
-        grounds: "partial",
-        evidence: "rg 'AKIA' → fixtures/aws_sample.env:3 (test fixture, not live)",
-      },
-      {
-        id: "CL-3",
-        text: "Python 3.11 is supported.",
-        gold: "true",
-        baseline: "true",
-        grounds: "true",
-        evidence: "pyproject.toml requires-python = '>=3.10'; CI matrix includes 3.11",
-      },
-    ],
-  },
-  {
-    id: "C-002",
-    slug: "vector-index-pr",
-    repo: "acme/vector-index",
-    title: "PR #482 — 'zero breaking changes to the public API'",
-    source: "PR",
-    status: "verified",
-    hard: false,
-    humanMinutes: 2,
-    costUsd: 0.11,
-    updated: "Today at 09:12 a.m.",
-    claims: [
-      {
-        id: "CL-1",
-        text: "No public symbol was removed or renamed.",
-        gold: "true",
-        baseline: "partial",
-        grounds: "true",
-        evidence: "api-diff snapshot: 0 removals, 4 additions",
-      },
-      {
-        id: "CL-2",
-        text: "Benchmarks improved by 18%.",
-        gold: "partial",
-        baseline: "true",
-        grounds: "partial",
-        evidence: "bench/run.py → 11.4% median on the same hardware profile",
-      },
-    ],
-  },
-  {
-    id: "C-003",
-    slug: "agent-summary-migrations",
-    repo: "acme/billing-api",
-    title: "Agent summary — 'migrations are reversible and tested'",
-    source: "Agent summary",
-    status: "needs-human",
-    hard: true,
-    humanMinutes: 6,
-    costUsd: 0.31,
-    updated: "Yesterday at 6:44 p.m.",
-    claims: [
-      {
-        id: "CL-1",
-        text: "Every migration has a down() path.",
-        gold: "false",
-        baseline: "true",
-        grounds: "false",
-        evidence: "3 of 17 migrations raise NotImplementedError in down()",
-      },
-      {
-        id: "CL-2",
-        text: "Migration tests run in CI.",
-        gold: "true",
-        baseline: "false",
-        grounds: "true",
-        evidence: ".github/workflows/ci.yml job 'migrations' present and required",
-      },
-      {
-        id: "CL-3",
-        text: "Rollback was rehearsed against production-shaped data.",
-        gold: "partial",
-        baseline: "true",
-        grounds: "partial",
-        evidence: "Only a 200-row synthetic fixture — human gate requested",
-      },
-    ],
-  },
-  {
-    id: "C-004",
-    slug: "edge-cache-readme",
-    repo: "acme/edge-cache",
-    title: "README — 'no network calls at import time'",
-    source: "README",
-    status: "verified",
-    hard: false,
-    humanMinutes: 2,
-    costUsd: 0.09,
-    updated: "Fri at 4:02 p.m.",
-    claims: [
-      {
-        id: "CL-1",
-        text: "Importing the package performs no network I/O.",
-        gold: "true",
-        baseline: "true",
-        grounds: "true",
-        evidence: "sandbox import with egress blocked → exit 0",
-      },
-    ],
-  },
-  {
-    id: "C-005",
-    slug: "sdk-docs-adversarial",
-    repo: "acme/telemetry-sdk",
-    title: "Adversarial pack — docs written to look correct",
-    source: "Agent summary",
-    status: "mismatch",
-    hard: true,
-    humanMinutes: 8,
-    costUsd: 0.38,
-    updated: "Fri at 11:20 a.m.",
-    claims: [
-      {
-        id: "CL-1",
-        text: "Sampling defaults to 100% in development.",
-        gold: "false",
-        baseline: "true",
-        grounds: "false",
-        evidence: "config.py: DEFAULT_SAMPLE_RATE = 0.1 regardless of env",
-      },
-      {
-        id: "CL-2",
-        text: "The SDK is dependency-free.",
-        gold: "false",
-        baseline: "partial",
-        grounds: "false",
-        evidence: "pyproject lists httpx and orjson as runtime deps",
-      },
-    ],
-  },
-  {
-    id: "C-006",
-    slug: "queue-worker-pr",
-    repo: "acme/queue-worker",
-    title: "PR #91 — 'at-least-once delivery preserved'",
-    source: "PR",
-    status: "queued",
-    hard: false,
-    humanMinutes: 0,
-    costUsd: 0,
-    updated: "Queued",
-    claims: [
-      {
-        id: "CL-1",
-        text: "Acknowledgement happens after the handler returns.",
-        gold: "true",
-        baseline: "true",
-        grounds: "true",
-        evidence: "pending run",
-      },
-    ],
-  },
-];
+/** Live gold packs + predictions from `cases/` + `out/` (regen: node scripts/sync-eval-to-ui.mjs) */
+export const cases = liveCases as unknown as CaseRecord[];
 
 export const metrics = {
-  claimAccuracy: { baseline: 0.61, grounds: 0.92 },
-  humanMinutes: { baseline: 14.2, grounds: 3.8 },
-  costPerCase: { baseline: 0.06, grounds: 0.21 },
-  casesRun: 10,
-  adversarialCases: 2,
+  claimAccuracy: {
+    baseline: liveMetrics.claimAccuracy.baseline,
+    grounds: liveMetrics.claimAccuracy.grounds,
+  },
+  humanMinutes: {
+    baseline: liveMetrics.humanMinutes.baseline ?? 0,
+    grounds: liveMetrics.humanMinutes.grounds ?? 0,
+  },
+  costPerCase: {
+    baseline: liveMetrics.costPerCase.baseline ?? 0,
+    grounds: liveMetrics.costPerCase.grounds ?? 0,
+  },
+  casesRun: liveMetrics.casesRun,
+  adversarialCases: liveMetrics.adversarialCases,
+  source: liveMetrics.source,
 };
 
-export const accuracyByCase = [
-  { name: "C-001", baseline: 33, grounds: 100 },
-  { name: "C-002", baseline: 50, grounds: 100 },
-  { name: "C-003", baseline: 33, grounds: 100 },
-  { name: "C-004", baseline: 100, grounds: 100 },
-  { name: "C-005", baseline: 0, grounds: 100 },
-  { name: "C-006", baseline: 100, grounds: 100 },
-  { name: "C-007", baseline: 66, grounds: 66 },
-  { name: "C-008", baseline: 50, grounds: 100 },
-  { name: "C-009", baseline: 66, grounds: 100 },
-  { name: "C-010", baseline: 100, grounds: 66 },
-];
+export const accuracyByCase = liveAccuracyByCase.map((r) => ({
+  name: r.name,
+  baseline: r.baseline ?? 0,
+  grounds: r.grounds ?? 0,
+}));
 
 export type TrajectoryStep = {
   id: string;
-  node: "plan" | "read" | "grep" | "test" | "verify" | "gate" | "report";
+  node: string;
   label: string;
   detail: string;
   duration: string;
 };
 
-export const trajectory: TrajectoryStep[] = [
-  {
-    id: "T1",
-    node: "plan",
-    label: "Decompose claim pack",
-    detail: "3 claims → 3 verification plans; memory seeded with finding IDs.",
-    duration: "0.4s",
-  },
-  {
-    id: "T2",
-    node: "grep",
-    label: "rg 'AKIA|BEGIN PRIVATE KEY' -n",
-    detail: "1 hit — fixtures/aws_sample.env:3",
-    duration: "0.2s",
-  },
-  {
-    id: "T3",
-    node: "read",
-    label: "read fixtures/aws_sample.env",
-    detail: "Placeholder value, referenced only by tests → downgrade to partial.",
-    duration: "0.3s",
-  },
-  {
-    id: "T4",
-    node: "test",
-    label: "sandbox: pytest -q",
-    detail: "2 failed, 118 passed — tests/test_settlement.py::test_rounding",
-    duration: "42.1s",
-  },
-  {
-    id: "T5",
-    node: "verify",
-    label: "Verify node re-checks each label against cited evidence",
-    detail: "CL-1 false (test output), CL-2 partial (fixture), CL-3 true (pyproject).",
-    duration: "1.1s",
-  },
-  {
-    id: "T6",
-    node: "gate",
-    label: "Human gate requested before dependency install",
-    detail: "Action outside allowlist: pip install -e '.[dev]' — approved by reviewer.",
-    duration: "waiting 41s",
-  },
-  {
-    id: "T7",
-    node: "report",
-    label: "Emit report.json + trajectory.jsonl",
-    detail: "3 labels, 5 evidence cells, 1 retry recorded.",
-    duration: "0.2s",
-  },
-];
+export const trajectory: TrajectoryStep[] = liveTrajectory.map((t) => ({
+  id: t.id,
+  node: t.node,
+  label: t.label,
+  detail: t.detail,
+  duration: t.duration,
+}));
 
-export const gateQueue = [
-  {
-    id: "G-118",
-    case: "C-003",
-    action: "Run migration rollback against fixture database",
-    risk: "medium" as const,
-    requested: "4 min ago",
-  },
-  {
-    id: "G-117",
-    case: "C-005",
-    action: "Install unpinned dependency httpx==0.27 in sandbox",
-    risk: "high" as const,
-    requested: "22 min ago",
-  },
-  {
-    id: "G-116",
-    case: "C-001",
-    action: "Read fixtures/aws_sample.env (matched secret pattern)",
-    risk: "low" as const,
-    requested: "1 hr ago",
-  },
-];
+export const gateQueue = liveGateQueue.map((g) => ({
+  id: g.id,
+  case: g.case,
+  action: g.action,
+  risk: g.risk as "low" | "medium" | "high",
+  requested: g.requested,
+}));
 
-export const runs = [
-  {
-    id: "R-0142",
-    pack: "gold-pack-v3",
-    mode: "GROUNDS agent",
-    cases: 10,
-    accuracy: 0.92,
-    duration: "11m 04s",
-    cost: 2.1,
-    when: "Today 10:30",
-  },
-  {
-    id: "R-0141",
-    pack: "gold-pack-v3",
-    mode: "One-shot baseline",
-    cases: 10,
-    accuracy: 0.61,
-    duration: "1m 18s",
-    cost: 0.6,
-    when: "Today 10:12",
-  },
-  {
-    id: "R-0140",
-    pack: "gold-pack-v2",
-    mode: "GROUNDS agent",
-    cases: 8,
-    accuracy: 0.88,
-    duration: "9m 41s",
-    cost: 1.7,
-    when: "Yesterday 18:02",
-  },
-  {
-    id: "R-0139",
-    pack: "adversarial-v1",
-    mode: "GROUNDS agent",
-    cases: 2,
-    accuracy: 1.0,
-    duration: "3m 22s",
-    cost: 0.7,
-    when: "Fri 11:20",
-  },
-];
+export const runs = liveRuns.map((r) => ({
+  id: r.id,
+  pack: r.pack,
+  mode: r.mode,
+  cases: r.cases,
+  accuracy: r.accuracy,
+  duration: r.duration,
+  cost: r.cost ?? 0,
+  when: r.when,
+}));
 
 export const changelog = [
   {
     version: "0.5.0",
     date: "Aug 29, 2026",
-    title: "Verify node split out of the reporter",
-    body: "Labels are now re-derived from cited evidence in a dedicated node. Accuracy 0.84 → 0.92 on gold-pack-v3.",
+    title: "Verify node + evidence merge",
+    body: "Macro claim accuracy 0.41 → 0.83 on gold-pack v1 (out/metrics.json). See IMPROVEMENT_CHANGELOG.md.",
     kind: "added" as const,
   },
   {
     version: "0.4.2",
-    date: "Aug 28, 2026",
-    title: "Human gate before any action outside the allowlist",
-    body: "Network calls and installs pause the graph and surface an approval card with the exact command.",
+    date: "Aug 29, 2026",
+    title: "Human gate before network/install",
+    body: "Commands outside the allowlist pause; unattended runs deny and record the decision in trajectory.jsonl.",
     kind: "added" as const,
   },
   {
     version: "0.4.0",
-    date: "Aug 28, 2026",
+    date: "Aug 29, 2026",
     title: "Removed: self-critique rewrite loop",
-    body: "The extra critique pass cost 1.9x tokens for a 0.4pt accuracy change — inside noise. Removed and documented.",
+    body: "Extra critique pass cost ~1.9× tokens for noise-level gain — removed and documented.",
     kind: "removed" as const,
   },
   {
     version: "0.3.1",
-    date: "Aug 27, 2026",
+    date: "Aug 29, 2026",
     title: "Trajectories record full tool I/O",
-    body: "Every read, grep and test writes stdout, exit code and elapsed time to trajectory.jsonl.",
+    body: "JSONL schema grounds.trajectory.v1 with tool args, stdout tails, verify, and gate events.",
     kind: "added" as const,
   },
 ];
@@ -397,7 +137,7 @@ export const posts = [
     tag: "Research",
     body: [
       "A README is a sales document written by whoever had the least context. When an agent writes it, the prose is fluent, internally consistent, and completely unanchored to the repository it describes.",
-      "We sampled claim packs from ten repositories and labelled each claim true, false, or partial against the actual code and a sandboxed test run. A one-shot LLM handed the same texts agreed with the documentation 61% of the time. Most of its errors were in one direction: it believed the claim.",
+      "We sampled claim packs from ten repositories and labelled each claim true, false, or partial against the actual code and a sandboxed test run. A one-shot LLM handed the same texts scored 41% macro accuracy. Most of its errors were in one direction: it believed the claim.",
       "The failure is structural. Without tools, the model can only check a claim against itself. GROUNDS grounds each claim in an artefact — a file range, a grep hit, a test exit code — and refuses to emit a label the verify node cannot re-derive from that artefact.",
     ],
   },
@@ -410,9 +150,9 @@ export const posts = [
     readingTime: "5 min",
     tag: "Engineering",
     body: [
-      "Our first agent read files, ran tests, and produced labels in a single call. It looked like an agent from the outside and behaved like a baseline with makeup.",
+      "Our first shallow tool loop under-collected evidence and collapsed toward baseline. Inventory breadth plus an evidence-only verify node changed the score.",
       "Splitting verification out changed the shape of the trajectory: the reporter can no longer invent a justification after the fact, because the verify node only sees the evidence cells that were actually collected.",
-      "Accuracy moved from 0.84 to 0.92 on gold-pack-v3, and — more usefully for reviewers — the number of labels with no cited artefact went to zero.",
+      "Accuracy moved from early shallow-tool runs (~0.19) to 0.83 on gold-pack v1 after inventory + evidence-only verify, and every label carries cited artefacts.",
     ],
   },
   {
@@ -426,7 +166,7 @@ export const posts = [
     body: [
       "Anything that touches the network, installs a package, or writes outside the case fixture stops the graph and asks a person.",
       "The approval card shows the exact command, the node that requested it, the claim it serves, and what happens if you decline. Reviewers approve in seconds because they are not reconstructing intent.",
-      "Median human time per case fell from 14.2 minutes to 3.8 — not because the human does less thinking, but because the thinking arrives pre-assembled.",
+      "Residual risk remains — sandbox escapes and model mistakes are possible. We document gates and never claim unhackable.",
     ],
   },
 ];
@@ -450,15 +190,15 @@ export const faqs = [
   },
   {
     q: "Can I replay a run?",
-    a: "Every run writes trajectory.jsonl with full tool I/O, exit codes and timings. The repro guide regenerates the eval table from those artefacts with one command.",
+    a: "Every run writes trajectory.jsonl with full tool I/O, exit codes and timings. REPRO.md regenerates the eval table from those artefacts with one command chain.",
   },
   {
     q: "Which languages are supported?",
-    a: "Python, TypeScript, Java, C++, Go and Rust repositories. Test execution uses the project's own runner; evidence collection is language-agnostic.",
+    a: "Python fixtures ship today; the tool loop is language-agnostic (read/grep/test_cmd). Extend test_cmd per case for other stacks.",
   },
   {
     q: "Where does the accuracy number come from?",
-    a: "Claim-label accuracy versus gold across ten cases including two adversarial packs, scored by eval/score.py. Baseline 0.61, GROUNDS 0.92.",
+    a: "Claim-label accuracy versus gold across ten cases including two adversarial packs, scored by eval/score.py. Baseline 0.41, GROUNDS 0.83 (see out/metrics.json). Regen UI with node scripts/sync-eval-to-ui.mjs.",
   },
   {
     q: "Do you store our code?",

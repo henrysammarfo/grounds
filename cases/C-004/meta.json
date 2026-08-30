@@ -1,0 +1,9 @@
+{
+  "id": "C-004",
+  "title": "README claims typed JSON API",
+  "repo": "tiny-json-api",
+  "source": "README",
+  "hard": false,
+  "test_cmd": "python -m pytest -q",
+  "notes": "README claims strict schema validation; handler is permissive."
+}

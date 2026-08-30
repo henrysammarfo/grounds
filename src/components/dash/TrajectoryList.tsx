@@ -23,7 +23,8 @@ export function TrajectoryList({ steps }: { steps: TrajectoryStep[] }) {
   return (
     <ol className="relative space-y-5 border-l border-border pl-7">
       {steps.map((s) => {
-        const Icon = nodeIcon[s.node];
+        const key = s.node as keyof typeof nodeIcon;
+        const Icon = nodeIcon[key] ?? Brain;
         return (
           <li key={s.id} className="relative">
             <span className="absolute -left-[41px] flex h-7 w-7 items-center justify-center rounded-full bg-ink">

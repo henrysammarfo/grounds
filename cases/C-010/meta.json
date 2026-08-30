@@ -1,0 +1,9 @@
+{
+  "id": "C-010",
+  "title": "Agent summary of retry policy",
+  "repo": "fetchy",
+  "source": "Agent summary",
+  "hard": false,
+  "test_cmd": "python -m pytest -q",
+  "notes": "Agent summary overstates retries and timeout defaults."
+}

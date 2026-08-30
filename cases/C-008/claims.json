@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-008-1",
+    "text": "The project is licensed under MIT as stated in the README."
+  },
+  {
+    "id": "C-008-2",
+    "text": "is_enabled is exported from the flagkit package __init__."
+  },
+  {
+    "id": "C-008-3",
+    "text": "Feature flags default to False when the key is unknown."
+  }
+]

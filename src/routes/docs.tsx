@@ -24,28 +24,30 @@ const steps = [
   {
     icon: Terminal,
     title: "1 · Install",
-    code: `git clone https://github.com/grounds-ai/grounds
-cd grounds && uv sync
-cp .env.example .env   # add your own model key`,
+    code: `cd grounds
+python -m pip install -e ".[dev]"
+# OPENAI_API_KEY in .env or ../scoutbot/agent/.env`,
   },
   {
     icon: ListChecks,
     title: "2 · Run the baseline",
-    code: `python baseline/run.py --pack gold-pack-v3
-# → runs/R-0141/predictions.json`,
+    code: `python baseline/run.py --all --mode llm
+# → out/baseline/<case>/predictions.json
+# → out/baseline/<case>/trajectory.jsonl`,
   },
   {
     icon: Terminal,
     title: "3 · Run the agent",
-    code: `python agent/graph.py --pack gold-pack-v3 --sandbox strict
-# → runs/R-0142/report.json
-# → runs/R-0142/trajectory.jsonl`,
+    code: `python agent/run.py --all
+# → out/agent/<case>/report.json
+# → out/agent/<case>/trajectory.jsonl`,
   },
   {
     icon: ListChecks,
-    title: "4 · Score both",
-    code: `python eval/score.py --runs R-0141 R-0142
-# accuracy | human-min | cost per case`,
+    title: "4 · Score + sync UI",
+    code: `python eval/score.py
+node scripts/sync-eval-to-ui.mjs
+# → out/metrics.json · out/EVAL_TABLE.md`,
   },
 ];
 
@@ -55,7 +57,7 @@ function DocsPage() {
       <PageHeader
         eyebrow="Docs"
         title="Reproduce every number on this site"
-        sub="Identical packs, identical repositories, one scoring script. Nothing here depends on a screenshot."
+        sub="Identical packs, identical repositories, one scoring script. Canonical steps live in REPRO.md."
       />
 
       <section className="mx-auto max-w-[1080px] px-6 pb-16">
@@ -78,39 +80,26 @@ function DocsPage() {
         <div className="mx-auto grid max-w-[1080px] gap-10 px-6 py-16 md:grid-cols-2">
           <div>
             <FolderTree className="h-6 w-6 text-accent" strokeWidth={1.9} />
-            <h2 className="t-display-sm mt-5 max-w-[14ch]">Repository layout</h2>
-            <p className="t-meta mt-4 max-w-[42ch]">
-              Every case is a fixture plus claims plus gold labels. Runs write artefacts, never
-              prose.
+            <h2 className="t-heading mt-4">Layout</h2>
+            <pre className="t-mono mt-4 overflow-x-auto rounded-xl bg-ink p-5 text-on-dark/90">{`cases/C-00N/{meta,claims,gold}.json + repo/
+baseline/run.py
+agent/run.py
+eval/score.py
+out/   # generated artefacts
+REPRO.md
+IMPROVEMENT_CHANGELOG.md`}</pre>
+          </div>
+          <div>
+            <Video className="h-6 w-6 text-accent" strokeWidth={1.9} />
+            <h2 className="t-heading mt-4">Video + changelog</h2>
+            <p className="t-body mt-3 text-muted-foreground">
+              Shoot from <code className="t-mono">VIDEO_SCRIPT.md</code>. Contest changelog is{" "}
+              <code className="t-mono">IMPROVEMENT_CHANGELOG.md</code> — not the marketing route alone.
             </p>
+            <Link to="/changelog" className="t-item mt-6 inline-flex text-accent hover:underline">
+              Product changelog →
+            </Link>
           </div>
-          <pre className="t-mono overflow-x-auto rounded-2xl bg-ink p-6 text-on-dark/90">
-            {`cases/<id>/
-  repo_fixture/
-  claims.json
-  gold.json
-baseline/run.py      → predictions.json
-agent/graph.py       → report.json + trajectory.jsonl
-eval/score.py        → accuracy · human-min · cost
-CHANGELOG.md · REPRO.md`}
-          </pre>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1080px] px-6 py-16">
-        <div className="flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-border p-8">
-          <div className="flex items-start gap-4">
-            <Video className="mt-1 h-5 w-5 text-accent" strokeWidth={2} />
-            <div>
-              <p className="t-heading">Five-minute walkthrough</p>
-              <p className="t-meta mt-2 max-w-[48ch]">
-                Problem, baseline, GROUNDS, the table, and the one experiment we removed.
-              </p>
-            </div>
-          </div>
-          <Link to="/changelog" className="btn-ink hover:opacity-90">
-            Read the changelog
-          </Link>
         </div>
       </section>
     </PageShell>

@@ -89,7 +89,7 @@ function Home() {
           [
             "Claim accuracy",
             `${Math.round(metrics.claimAccuracy.grounds * 100)}%`,
-            "vs 61% one-shot baseline",
+            "vs 41% one-shot baseline",
           ],
           ["Human minutes / case", "3.8", "down from 14.2"],
           ["Gold cases", `${metrics.casesRun}`, `${metrics.adversarialCases} adversarial`],
@@ -133,7 +133,7 @@ function Home() {
           <div className="panel divide-y divide-border-row">
             {[
               ["Method", "One-shot LLM on dumped text", "Tools · verify node · memory · gate"],
-              ["Claim accuracy", "0.61", "0.92"],
+              ["Claim accuracy", "0.41", "0.83"],
               ["Evidence cells", "0", "5.4 per case"],
               ["Replayable trajectory", "No", "trajectory.jsonl"],
             ].map(([k, a, b]) => (

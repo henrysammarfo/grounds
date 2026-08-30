@@ -1,0 +1,22 @@
+[
+  {
+    "id": "C-004-1",
+    "label": "false",
+    "rationale": "api.py create_item returns the raw dict with no required-field checks; tests/test_api.py documents acceptance of payloads missing name."
+  },
+  {
+    "id": "C-004-2",
+    "label": "true",
+    "rationale": "health() returns {\"status\": \"ok\"}; test_health passes."
+  },
+  {
+    "id": "C-004-3",
+    "label": "false",
+    "rationale": "No openapi.yaml exists in the fixture repo."
+  },
+  {
+    "id": "C-004-4",
+    "label": "true",
+    "rationale": "create_item(payload) stores and returns payload unchanged without schema checks."
+  }
+]

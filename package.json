@@ -9,7 +9,14 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "eval:sync": "node scripts/sync-eval-to-ui.mjs",
+    "research": "node scripts/research-live.mjs",
+    "contest:baseline": "python baseline/run.py --all --mode llm",
+    "contest:agent": "python agent/run.py --all",
+    "contest:score": "python eval/score.py",
+    "contest:all": "python baseline/run.py --all --mode llm && python agent/run.py --all && python eval/score.py && node scripts/sync-eval-to-ui.mjs",
+    "test:py": "python -m pytest -q"
   },
   "overrides": {
     "rolldown": "1.2.1"

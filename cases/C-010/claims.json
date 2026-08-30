@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-010-1",
+    "text": "fetch_url retries failed calls up to 3 times before giving up."
+  },
+  {
+    "id": "C-010-2",
+    "text": "Default timeout is 30 seconds."
+  },
+  {
+    "id": "C-010-3",
+    "text": "Successful responses return the body string from the fake transport."
+  }
+]

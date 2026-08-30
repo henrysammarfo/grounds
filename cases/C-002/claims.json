@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-002-1",
+    "text": "Package version is 2.1.0 as stated in the PR description."
+  },
+  {
+    "id": "C-002-2",
+    "text": "The RateLimiter.allow() method returns True when under the configured limit."
+  },
+  {
+    "id": "C-002-3",
+    "text": "Test suite covers burst rejection (requests above limit are denied)."
+  }
+]

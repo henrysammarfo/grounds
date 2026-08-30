@@ -1,3 +1,22 @@
+# Secrets / local env
+.env
+.env.*
+!.env.example
+
+# Research raw dumps (may contain tool payloads)
+memory/_raw_*
+
+# Contest run artefacts (regenerate via REPRO.md)
+out/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
 # Logs
 logs
 *.log

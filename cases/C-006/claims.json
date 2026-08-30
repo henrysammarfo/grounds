@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-006-1",
+    "text": "encrypt() transforms plaintext so ciphertext differs from the input string."
+  },
+  {
+    "id": "C-006-2",
+    "text": "No default encryption key is embedded in source."
+  },
+  {
+    "id": "C-006-3",
+    "text": "decrypt(encrypt(msg)) round-trips for ASCII messages when a key is supplied."
+  }
+]

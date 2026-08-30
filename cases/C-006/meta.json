@@ -1,0 +1,9 @@
+{
+  "id": "C-006",
+  "title": "Adversarial security checklist PR",
+  "repo": "vault-lite",
+  "source": "PR",
+  "hard": true,
+  "test_cmd": "python -m pytest -q",
+  "notes": "PR checklist looks complete; encrypt is no-op and default key is hardcoded fixture."
+}

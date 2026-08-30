@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-006-1",
+    "label": "false",
+    "rationale": "encrypt() returns plaintext unchanged (identity). pytest shows equal strings."
+  },
+  {
+    "id": "C-006-2",
+    "label": "false",
+    "rationale": "vault.py defines DEFAULT_KEY = 'fixture-key-NOT-A-REAL-SECRET'."
+  },
+  {
+    "id": "C-006-3",
+    "label": "partial",
+    "rationale": "Round-trip holds only because encrypt/decrypt are identity; not real crypto. Claim is partially true as behavioral equality, false as security property."
+  }
+]

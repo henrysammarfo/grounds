@@ -1,0 +1,18 @@
+[
+  {
+    "id": "C-004-1",
+    "text": "POST /items rejects payloads missing the required name field."
+  },
+  {
+    "id": "C-004-2",
+    "text": "GET /health returns status ok."
+  },
+  {
+    "id": "C-004-3",
+    "text": "The package ships with OpenAPI 3.1 specification file openapi.yaml."
+  },
+  {
+    "id": "C-004-4",
+    "text": "create_item accepts any dict without validating required keys (implementation)."
+  }
+]

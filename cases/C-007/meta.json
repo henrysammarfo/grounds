@@ -1,0 +1,9 @@
+{
+  "id": "C-007",
+  "title": "Dependency pin and Python version claims",
+  "repo": "csv-tools",
+  "source": "README",
+  "hard": false,
+  "test_cmd": null,
+  "notes": "File/grep only — requirements and runtime marker mismatch README."
+}

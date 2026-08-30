@@ -29,8 +29,8 @@ function RunsPage() {
             setBusy(true);
             toast.success(
               mode === "agent"
-                ? "GROUNDS agent queued on gold-pack-v3"
-                : "One-shot baseline queued on gold-pack-v3",
+                ? "GROUNDS agent queued on gold-pack-v1"
+                : "One-shot baseline queued on gold-pack-v1",
             );
             setTimeout(() => setBusy(false), 1600);
           }}
@@ -71,7 +71,7 @@ function RunsPage() {
           <div>
             <p className="t-caption mb-2">Pack</p>
             <select className="t-body h-10 w-full rounded-xl border border-border bg-background px-3 outline-none focus:border-accent">
-              <option>gold-pack-v3 (10 cases)</option>
+              <option>gold-pack-v1 (10 cases)</option>
               <option>gold-pack-v2 (8 cases)</option>
               <option>adversarial-v1 (2 cases)</option>
             </select>

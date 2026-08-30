@@ -1,0 +1,9 @@
+{
+  "id": "C-009",
+  "title": "Changelog claims unbroken CLI entrypoint",
+  "repo": "todo-cli",
+  "source": "README",
+  "hard": false,
+  "test_cmd": "python -m pytest -q",
+  "notes": "CHANGELOG claims main() exit 0; CLI raises on empty argv."
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "C-005-1",
+    "label": "false",
+    "rationale": "track() copies properties verbatim; email keys remain. test_no_redaction documents this."
+  },
+  {
+    "id": "C-005-2",
+    "label": "false",
+    "rationale": "track() appends to _SENT immediately (side channel) in addition to buffer — docs claim offline-only until flush."
+  },
+  {
+    "id": "C-005-3",
+    "label": "true",
+    "rationale": "Client.version reads VERSION from sdk package; both are 0.3.1."
+  },
+  {
+    "id": "C-005-4",
+    "label": "partial",
+    "rationale": "flush() returns drained count, but also clears _SENT; docs omit the eager _SENT path so behavior is only partially as documented."
+  }
+]

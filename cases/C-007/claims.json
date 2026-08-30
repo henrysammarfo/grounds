@@ -1,0 +1,14 @@
+[
+  {
+    "id": "C-007-1",
+    "text": "requirements.txt pins requests==2.32.3."
+  },
+  {
+    "id": "C-007-2",
+    "text": "README correctly states the project requires Python 3.12 or newer."
+  },
+  {
+    "id": "C-007-3",
+    "text": "parse_row splits a comma-separated line into a list of fields."
+  }
+]

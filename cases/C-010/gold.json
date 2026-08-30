@@ -1,0 +1,17 @@
+[
+  {
+    "id": "C-010-1",
+    "label": "false",
+    "rationale": "fetch_url attempts once only (no retry loop). MAX_RETRIES constant is unused."
+  },
+  {
+    "id": "C-010-2",
+    "label": "false",
+    "rationale": "DEFAULT_TIMEOUT is 5, not 30."
+  },
+  {
+    "id": "C-010-3",
+    "label": "true",
+    "rationale": "On FakeTransport 200, fetch_url returns response body; test_success passes."
+  }
+]

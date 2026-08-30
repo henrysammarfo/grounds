@@ -36,9 +36,20 @@ const toggles = [
 ];
 
 function SettingsPage() {
-  const [state, setState] = useState(
-    Object.fromEntries(toggles.map((t) => [t.key, t.on])) as Record<string, boolean>,
-  );
+  const storageKey = "grounds.settings.policy";
+  const [state, setState] = useState(() => {
+    const defaults = Object.fromEntries(toggles.map((t) => [t.key, t.on])) as Record<
+      string,
+      boolean
+    >;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return defaults;
+      return { ...defaults, ...(JSON.parse(raw) as Record<string, boolean>) };
+    } catch {
+      return defaults;
+    }
+  });
 
   return (
     <div className="space-y-6">
@@ -65,8 +76,16 @@ function SettingsPage() {
                 aria-checked={state[t.key]}
                 aria-label={t.label}
                 onClick={() => {
-                  setState((s) => ({ ...s, [t.key]: !s[t.key] }));
-                  toast.success("Policy updated");
+                  setState((s) => {
+                    const next = { ...s, [t.key]: !s[t.key] };
+                    try {
+                      localStorage.setItem(storageKey, JSON.stringify(next));
+                    } catch {
+                      /* ignore quota */
+                    }
+                    return next;
+                  });
+                  toast.success("Policy saved in this browser");
                 }}
                 className={cn(
                   "mt-1 h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors",
@@ -93,14 +112,16 @@ function SettingsPage() {
           </div>
           <p className="t-meta mt-3">Used by the CLI to submit claim packs.</p>
           <code className="mt-4 block truncate rounded-xl bg-ink px-4 py-3 font-mono text-[12px] text-on-dark">
-            grd_live_••••••••••••••••••••7f21
+            Use OPENAI_API_KEY in .env — never paste keys into the UI
           </code>
           <button
             type="button"
             className="btn-outline-ink mt-4 hover:bg-secondary"
-            onClick={() => toast.success("New key issued — old key revoked")}
+            onClick={() =>
+              toast.message("Rotate keys in your provider console, then update .env locally")
+            }
           >
-            Rotate key
+            Key hygiene tip
           </button>
         </section>
 

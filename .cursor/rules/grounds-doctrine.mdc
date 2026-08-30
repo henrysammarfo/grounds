@@ -1,0 +1,42 @@
+---
+description: GROUNDS micro1 doctrine — bible binding, real eval only, no unhackable claims
+alwaysApply: true
+---
+
+# GROUNDS doctrine (always)
+
+## Binding docs (read before coding)
+
+1. `memory/CURRENT_STATE.md` — what is real vs missing  
+2. `memory/FACT_CHECK.md` — verified contest/product claims  
+3. Scoutbot bible: `../scoutbot/docs/GROUNDS_BIBLE.md` (+ micro1 `NOTES` / `LOCKED` / `DEEP_PASS`)  
+4. If bible conflicts with **live HackerEarth** → prefer live page + update FACT_CHECK; do not silently invent
+
+## Product thesis (do not dilute)
+
+Verify README/PR/agent claims against the **real repo** with tools + sandbox tests + human gate. Beat a **one-shot LLM baseline** on identical gold claim packs. Trajectories must show tool I/O, retries, human checkpoints.
+
+## Contest deliverables (must exist for submit)
+
+- Code + Improvement Changelog (iterations, removed experiment, failure mode, hot take)  
+- REPRO.md (clean env, baseline + agent + eval commands, versions, runtime/cost)  
+- ≤5 min video  
+- Agent trajectories (JSONL) for every agent  
+
+Hard close: **2026-08-31 18:00 UTC** (re-verify live if unsure).
+
+## Will not ship
+
+- PDF example clones as the product story  
+- Live trading / FENN desk  
+- Secrets in repo or submission  
+- **Mock dashboard metrics as Measured Improvement**  
+- Claims of unhackable / zero residual risk / “nation-state proof”
+
+## Build order
+
+Contest agent package (`cases/` · `baseline/` · `agent/` · `eval/` · trajectories) **before** more marketing polish. UI is optional; eval honesty is mandatory.
+
+## Architecture conflicts
+
+Stop and ask — do not invent stack forks. Suggested contest stack: Python + LangGraph + pytest + ripgrep + subprocess sandbox.

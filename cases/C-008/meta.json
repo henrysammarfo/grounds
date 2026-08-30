@@ -1,0 +1,9 @@
+{
+  "id": "C-008",
+  "title": "License and public API surface",
+  "repo": "flagkit",
+  "source": "README",
+  "hard": false,
+  "test_cmd": null,
+  "notes": "File/grep only — LICENSE vs README and exported symbols."
+}
