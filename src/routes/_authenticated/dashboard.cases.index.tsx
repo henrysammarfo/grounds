@@ -1,8 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Filter, Plus, ChevronRight, Flame } from "lucide-react";
-import { cases, type CaseStatus } from "@/lib/grounds-data";
+import { Search, Filter, Plus, ChevronRight, Flame, Inbox } from "lucide-react";
+import { toast } from "sonner";
+import type { CaseStatus } from "@/lib/grounds-data";
 import { StatusPill } from "@/components/dash/StatusPill";
+import { useWorkspace } from "@/lib/workspace-context";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard/cases/")({
@@ -18,8 +20,15 @@ const filters: Array<{ key: CaseStatus | "all"; label: string }> = [
 ];
 
 function CasesPage() {
+  const navigate = useNavigate();
+  const { cases, newClaimPack, importSample, workspace } = useWorkspace();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<CaseStatus | "all">("all");
+  const [creating, setCreating] = useState(false);
+  const [title, setTitle] = useState("");
+  const [repo, setRepo] = useState("");
+  const [claimA, setClaimA] = useState("All unit tests pass.");
+  const [claimB, setClaimB] = useState("No secrets are committed in this repository.");
 
   const rows = useMemo(
     () =>
@@ -28,8 +37,26 @@ function CasesPage() {
           (status === "all" || c.status === status) &&
           (c.title + c.repo + c.id).toLowerCase().includes(q.toLowerCase()),
       ),
-    [q, status],
+    [cases, q, status],
   );
+
+  function onCreate() {
+    const pack = newClaimPack({
+      title: title.trim() || "New honesty pack",
+      repo: repo.trim() || "my-repo",
+      source: "README",
+      claimTexts: [claimA, claimB].map((s) => s.trim()).filter(Boolean),
+    });
+    if (!pack) {
+      toast.error("Sign in required");
+      return;
+    }
+    toast.success(`Created ${pack.id} in ${workspace.workspaceName}`);
+    setCreating(false);
+    setTitle("");
+    setRepo("");
+    navigate({ to: "/dashboard/cases/$caseId", params: { caseId: pack.slug } });
+  }
 
   return (
     <div className="space-y-6">
@@ -37,19 +64,92 @@ function CasesPage() {
         <div>
           <h1 className="t-display-sm">Claim packs</h1>
           <p className="t-meta mt-2">
-            {cases.length} cases in gold-pack-v1 · {cases.filter((c) => c.hard).length}{" "}
-            adversarial · synced from out/
+            {cases.length} pack{cases.length === 1 ? "" : "s"} in{" "}
+            <strong className="text-ink font-medium">{workspace.workspaceName}</strong> — other
+            accounts cannot see these.
           </p>
         </div>
-        <button type="button" className="btn-ink hover:opacity-90">
-          <Plus className="h-4 w-4" strokeWidth={2.4} />
-          New claim pack
-        </button>
+        <div className="flex flex-wrap gap-2">
+          {!workspace.importedContestSample && (
+            <button
+              type="button"
+              className="btn-outline-ink hover:bg-secondary"
+              onClick={() => {
+                importSample();
+                toast.success("Contest gold-pack sample imported into YOUR workspace only");
+              }}
+            >
+              Import contest sample
+            </button>
+          )}
+          <button
+            type="button"
+            className="btn-ink hover:opacity-90"
+            onClick={() => setCreating(true)}
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.4} />
+            New claim pack
+          </button>
+        </div>
       </div>
+
+      {creating && (
+        <div className="panel space-y-4 p-6">
+          <p className="t-item">New claim pack</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="t-caption mb-1.5 block">Title</span>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="README honesty check"
+                className="t-body h-10 w-full rounded-xl border border-border bg-background px-3 outline-none focus:border-accent"
+              />
+            </label>
+            <label className="block">
+              <span className="t-caption mb-1.5 block">Repo name</span>
+              <input
+                value={repo}
+                onChange={(e) => setRepo(e.target.value)}
+                placeholder="acme/payments-api"
+                className="t-body h-10 w-full rounded-xl border border-border bg-background px-3 outline-none focus:border-accent"
+              />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="t-caption mb-1.5 block">Claim 1</span>
+              <input
+                value={claimA}
+                onChange={(e) => setClaimA(e.target.value)}
+                className="t-body h-10 w-full rounded-xl border border-border bg-background px-3 outline-none focus:border-accent"
+              />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="t-caption mb-1.5 block">Claim 2</span>
+              <input
+                value={claimB}
+                onChange={(e) => setClaimB(e.target.value)}
+                className="t-body h-10 w-full rounded-xl border border-border bg-background px-3 outline-none focus:border-accent"
+              />
+            </label>
+          </div>
+          <div className="flex gap-2">
+            <button type="button" className="btn-ink hover:opacity-90" onClick={onCreate}>
+              Create pack
+            </button>
+            <button
+              type="button"
+              className="btn-outline-ink hover:bg-secondary"
+              onClick={() => setCreating(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="panel">
         <div className="flex flex-wrap items-center gap-3 border-b border-border-row px-5 py-4">
-          <div className="relative flex-1 min-w-[220px]">
+          <div className="relative min-w-[220px] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={q}
@@ -106,7 +206,13 @@ function CasesPage() {
             </li>
           ))}
           {rows.length === 0 && (
-            <li className="t-meta px-6 py-12 text-center">No packs match that filter.</li>
+            <li className="px-6 py-16 text-center">
+              <Inbox className="mx-auto h-6 w-6 text-muted-foreground" strokeWidth={1.8} />
+              <p className="t-item mt-3">No packs in this workspace yet</p>
+              <p className="t-caption mt-1">
+                Create a claim pack — it stays private to your account.
+              </p>
+            </li>
           )}
         </ul>
       </div>

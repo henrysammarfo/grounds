@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ShieldAlert, Check, X, Inbox } from "lucide-react";
 import { toast } from "sonner";
-import { gateQueue } from "@/lib/grounds-data";
+import { useWorkspace } from "@/lib/workspace-context";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard/gate")({
@@ -16,16 +16,15 @@ const riskTone = {
 } as const;
 
 function GatePage() {
+  const { gateQueue, decideGate, workspace } = useWorkspace();
   const [resolved, setResolved] = useState<Record<string, "approved" | "denied">>({});
-  const pending = gateQueue.filter((g) => !resolved[g.id]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="t-display-sm">Human gate</h1>
         <p className="t-meta mt-2">
-          The agent pauses before any action outside the allowlist. Approvals are recorded in the
-          trajectory with the reviewer and timestamp.
+          Approvals for {workspace.workspaceName}. Other tenants never see your queue.
         </p>
       </div>
 
@@ -33,18 +32,18 @@ function GatePage() {
         <div className="flex items-center gap-2 border-b border-border-row px-6 py-4">
           <ShieldAlert className="h-4 w-4 text-accent" strokeWidth={2} />
           <p className="t-item">Pending approvals</p>
-          <span className="t-caption ml-auto">{pending.length} waiting</span>
+          <span className="t-caption ml-auto">{gateQueue.length} waiting</span>
         </div>
 
-        {pending.length === 0 ? (
+        {gateQueue.length === 0 ? (
           <div className="px-6 py-16 text-center">
             <Inbox className="mx-auto h-6 w-6 text-muted-foreground" strokeWidth={1.8} />
             <p className="t-item mt-3">Queue is clear</p>
-            <p className="t-caption mt-1">All gated actions have been reviewed.</p>
+            <p className="t-caption mt-1">Run the GROUNDS agent to raise gated actions.</p>
           </div>
         ) : (
           <ul className="divide-y divide-border-row">
-            {pending.map((g) => (
+            {gateQueue.map((g) => (
               <li key={g.id} className="flex flex-wrap items-center gap-4 px-6 py-5">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -66,6 +65,7 @@ function GatePage() {
                   <button
                     type="button"
                     onClick={() => {
+                      decideGate(g.id, "denied");
                       setResolved((r) => ({ ...r, [g.id]: "denied" }));
                       toast(`${g.id} denied — agent will report the blocked step`);
                     }}
@@ -77,6 +77,7 @@ function GatePage() {
                   <button
                     type="button"
                     onClick={() => {
+                      decideGate(g.id, "approved");
                       setResolved((r) => ({ ...r, [g.id]: "approved" }));
                       toast.success(`${g.id} approved — run resumed`);
                     }}
@@ -98,7 +99,7 @@ function GatePage() {
           <ul className="mt-4 space-y-2">
             {Object.entries(resolved).map(([id, decision]) => (
               <li key={id} className="t-meta">
-                {id} — <span className="text-ink">{decision}</span> by you · just now
+                {id} — {decision} by you · just now
               </li>
             ))}
           </ul>

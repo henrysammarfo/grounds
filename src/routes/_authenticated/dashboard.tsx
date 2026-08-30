@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { clearRememberMe } from "@/lib/auth-session";
+import { WorkspaceProvider, useWorkspace } from "@/lib/workspace-context";
 
 import {
   LayoutDashboard,
@@ -17,7 +18,6 @@ import {
   Bell,
   LogOut,
   UserRound,
-
 } from "lucide-react";
 import { GroundsWordmark } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: DashboardLayout,
+  component: DashboardShell,
 });
 
 const nav = [
@@ -52,20 +52,24 @@ const nav = [
   { to: "/dashboard/gate", label: "Human gate", icon: ShieldCheck },
   { to: "/dashboard/account", label: "Account", icon: UserRound },
   { to: "/dashboard/settings", label: "Settings", icon: Settings },
-
 ] as const;
+
+function DashboardShell() {
+  return (
+    <WorkspaceProvider>
+      <DashboardLayout />
+    </WorkspaceProvider>
+  );
+}
 
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { workspace, cases } = useWorkspace();
 
   useEffect(() => {
-    if (import.meta.env.DEV && import.meta.env.VITE_GROUNDS_DEMO === "1") {
-      setEmail("demo@grounds.local");
-      return;
-    }
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
   }, []);
 
@@ -78,7 +82,6 @@ function DashboardLayout() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
-
 
   return (
     <div className="min-h-screen bg-secondary lg:flex">
@@ -125,8 +128,10 @@ function DashboardLayout() {
             open ? "block" : "hidden lg:block",
           )}
         >
-          <p className="t-item text-on-dark">gold-pack-v1</p>
-          <p className="t-caption mt-1 text-on-dark/55">10 cases · 2 adversarial</p>
+          <p className="t-item truncate text-on-dark">{workspace.workspaceName}</p>
+          <p className="t-caption mt-1 text-on-dark/55">
+            {cases.length} pack{cases.length === 1 ? "" : "s"} · tenant-isolated
+          </p>
           <Link
             to="/dashboard/runs"
             className="btn-light mt-4 h-9 w-full rounded-xl text-[13px]"
@@ -138,7 +143,7 @@ function DashboardLayout() {
 
       <div className="flex-1">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-6">
-          <p className="t-item">Workspace · solo</p>
+          <p className="t-item truncate">{workspace.workspaceName}</p>
           <div className="flex items-center gap-4">
             <Bell className="h-4.5 w-4.5 text-muted-foreground" strokeWidth={2} />
             <span className="t-meta hidden sm:block">{email}</span>

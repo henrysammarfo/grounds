@@ -131,8 +131,8 @@ function SettingsPage() {
             <p className="t-item">Access</p>
           </div>
           <p className="t-meta mt-3">
-            Contest / solo mode: one operator, one workspace. Shared orgs and seat-based
-            multi-tenant review are not required for micro1 and are not shipped yet.
+            Multi-tenant: each account owns a private workspace (packs, runs, gate, scores). New
+            signups start empty — they do not inherit another user&apos;s gold pack.
           </p>
           <ul className="mt-4 space-y-3">
             <li className="flex items-center justify-between">
@@ -144,10 +144,10 @@ function SettingsPage() {
             type="button"
             className="btn-outline-ink mt-5 hover:bg-secondary"
             onClick={() =>
-              toast.message("Team invites / multi-tenant workspaces — post-contest roadmap")
+              toast.message("Seat invites / org roles — roadmap; isolation already per-account")
             }
           >
-            Invite later
+            Invite teammate later
           </button>
         </section>
       </div>

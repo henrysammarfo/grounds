@@ -1,29 +1,29 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Play, Download, FileText, Quote } from "lucide-react";
 import { toast } from "sonner";
-import { cases, trajectory } from "@/lib/grounds-data";
 import { StatusPill, LabelPill } from "@/components/dash/StatusPill";
 import { TrajectoryList } from "@/components/dash/TrajectoryList";
+import { useWorkspace } from "@/lib/workspace-context";
 
 export const Route = createFileRoute("/_authenticated/dashboard/cases/$caseId")({
-  loader: ({ params }) => {
-    const record = cases.find((c) => c.slug === params.caseId);
-    if (!record) throw notFound();
-    return { record };
-  },
-  notFoundComponent: () => (
-    <div className="panel p-12 text-center">
-      <p className="t-heading">That claim pack doesn’t exist</p>
-      <Link to="/dashboard/cases" className="btn-ink mt-6 hover:opacity-90">
-        Back to claim packs
-      </Link>
-    </div>
-  ),
   component: CaseDetail,
 });
 
 function CaseDetail() {
-  const { record } = Route.useLoaderData();
+  const { caseId } = Route.useParams();
+  const { cases, trajectory, runPack } = useWorkspace();
+  const record = cases.find((c) => c.slug === caseId);
+
+  if (!record) {
+    return (
+      <div className="panel p-12 text-center">
+        <p className="t-heading">That claim pack doesn’t exist in this workspace</p>
+        <Link to="/dashboard/cases" className="btn-ink mt-6 hover:opacity-90">
+          Back to claim packs
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -58,7 +58,10 @@ function CaseDetail() {
           <button
             type="button"
             className="btn-ink hover:opacity-90"
-            onClick={() => toast.success(`Re-running ${record.id} in a strict sandbox`)}
+            onClick={() => {
+              runPack(record.id, "agent");
+              toast.success(`GROUNDS agent finished on ${record.id}`);
+            }}
           >
             <Play className="h-4 w-4" strokeWidth={2.2} />
             Re-run pack
@@ -70,7 +73,7 @@ function CaseDetail() {
         {[
           ["Claims", `${record.claims.length}`],
           ["Human minutes", `${record.humanMinutes}`],
-          ["Cost", `$${record.costUsd.toFixed(2)}`],
+          ["Cost", `$${record.costUsd < 0.01 ? record.costUsd.toFixed(4) : record.costUsd.toFixed(2)}`],
         ].map(([k, v]) => (
           <div key={k} className="panel p-5">
             <p className="t-caption">{k}</p>
@@ -97,10 +100,10 @@ function CaseDetail() {
             </thead>
             <tbody className="divide-y divide-border-row">
               {record.claims.map((c) => (
-                <tr key={c.id}>
-                  <td className="t-item max-w-[280px] px-6 py-4">{c.text}</td>
+                <tr key={c.id} className="align-top">
+                  <td className="t-meta px-6 py-4 max-w-[280px]">{c.text}</td>
                   <td className="px-6 py-4">
-                    <LabelPill label={c.gold} muted />
+                    <LabelPill label={c.gold} />
                   </td>
                   <td className="px-6 py-4">
                     <LabelPill label={c.baseline} />
@@ -108,12 +111,7 @@ function CaseDetail() {
                   <td className="px-6 py-4">
                     <LabelPill label={c.grounds} />
                   </td>
-                  <td className="t-caption max-w-[280px] px-6 py-4">
-                    <span className="inline-flex items-start gap-1.5">
-                      <Quote className="mt-0.5 h-3 w-3 shrink-0" strokeWidth={2} />
-                      {c.evidence}
-                    </span>
-                  </td>
+                  <td className="t-caption px-6 py-4 max-w-[320px]">{c.evidence}</td>
                 </tr>
               ))}
             </tbody>
@@ -121,14 +119,12 @@ function CaseDetail() {
         </div>
       </section>
 
-      <section className="panel overflow-hidden">
-        <div className="border-b border-border-row px-6 py-4">
+      <section className="panel p-6">
+        <div className="mb-5 flex items-center gap-2">
+          <Quote className="h-4 w-4 text-accent" strokeWidth={2} />
           <p className="t-item">Trajectory</p>
-          <p className="t-caption mt-1">Full tool I/O as recorded in trajectory.jsonl</p>
         </div>
-        <div className="p-6">
-          <TrajectoryList steps={trajectory} />
-        </div>
+        <TrajectoryList steps={trajectory} />
       </section>
     </div>
   );

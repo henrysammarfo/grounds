@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { Braces, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { cases, trajectory } from "@/lib/grounds-data";
 import { TrajectoryList } from "@/components/dash/TrajectoryList";
+import { useWorkspace } from "@/lib/workspace-context";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard/trajectories")({
@@ -11,23 +11,55 @@ export const Route = createFileRoute("/_authenticated/dashboard/trajectories")({
 });
 
 function TrajectoriesPage() {
+  const { cases, trajectory, workspace } = useWorkspace();
   const [active, setActive] = useState(cases[0]?.id ?? "");
-  const jsonl = trajectory
-    .map((s) => JSON.stringify({ step: s.id, node: s.node, action: s.label, result: s.detail }))
-    .join("\n");
+
+  useEffect(() => {
+    if (!active && cases[0]) setActive(cases[0].id);
+    if (active && !cases.some((c) => c.id === active) && cases[0]) {
+      setActive(cases[0].id);
+    }
+  }, [cases, active]);
+
+  const jsonl = useMemo(
+    () =>
+      trajectory
+        .map((s) =>
+          JSON.stringify({ step: s.id, node: s.node, action: s.label, result: s.detail }),
+        )
+        .join("\n"),
+    [trajectory],
+  );
+
+  if (!cases.length) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="t-display-sm">Trajectory inspector</h1>
+          <p className="t-meta mt-2">{workspace.workspaceName} has no packs yet.</p>
+        </div>
+        <div className="panel p-10 text-center">
+          <p className="t-item">Nothing to replay</p>
+          <Link to="/dashboard/cases" className="btn-ink mt-6 hover:opacity-90">
+            Create a claim pack
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="t-display-sm">Trajectory inspector</h1>
         <p className="t-meta mt-2">
-          Every tool call, sandbox result and retry is replayable. Nothing is summarized away.
+          Tool I/O for {workspace.workspaceName}. Other accounts cannot open these traces.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
         <div className="panel h-fit p-2">
-          {cases.slice(0, 6).map((c) => (
+          {cases.map((c) => (
             <button
               key={c.id}
               type="button"
@@ -45,7 +77,9 @@ function TrajectoriesPage() {
 
         <div className="space-y-6">
           <div className="panel p-6">
-            <p className="t-item mb-5">{active} · 7 steps · 1 human gate</p>
+            <p className="t-item mb-5">
+              {active} · {trajectory.length} steps · tenant-private
+            </p>
             <TrajectoryList steps={trajectory} />
           </div>
 
@@ -68,7 +102,7 @@ function TrajectoriesPage() {
               </button>
             </div>
             <pre className="overflow-x-auto bg-ink px-6 py-5 font-mono text-[12px] leading-6 text-on-dark">
-              {jsonl}
+              {jsonl || "// run a pack to emit trajectory steps"}
             </pre>
           </div>
         </div>
