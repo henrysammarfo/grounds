@@ -14,6 +14,7 @@ out/
 demo/_frames/
 demo/_record/
 demo/_product_frames/
+demo/_judge_frames/
 
 # Submission pack scratch
 submission/_staging/
